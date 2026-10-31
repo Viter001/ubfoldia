@@ -1,5 +1,11 @@
 import type { Project } from '../core/project';
+import type { RecentProject } from '../electron/recent-projects';
 import type { LeaveChoice, LeavePrompt, LeaveResult } from '../shared/leave';
+export type { RecentProject };
+export type RecentProjectsResult = {
+  entries: RecentProject[];
+  warning: string;
+};
 export type State = {
   project: Project | null;
   root: string;
@@ -8,6 +14,7 @@ export type State = {
   canRedo: boolean;
   missing: string[];
   approvedRoots: string[];
+  recentWarning?: string;
 };
 declare global {
   interface Window {

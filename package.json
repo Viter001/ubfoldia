@@ -17,7 +17,8 @@
     "test:edge-colors": "node scripts/edge-direction-acceptance.mjs",
     "test:ribbon-window": "node scripts/ribbon-window-acceptance.mjs",
     "test:agent": "node scripts/agent-host.mjs",
-    "format:check": "prettier --check src tests scripts"
+    "format:check": "prettier --check src tests scripts",
+    "test:recent-projects": "node scripts/recent-projects-acceptance.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",

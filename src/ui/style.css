@@ -1319,3 +1319,112 @@ button:disabled {
     padding-inline: 12px;
   }
 }
+
+/* Welcome: recently opened projects */
+.recent-projects {
+  margin-top: 32px;
+  max-width: 1000px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.recent-projects h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.recent-projects > p,
+.recent-project-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
+.recent-project-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  gap: 8px;
+}
+.recent-project-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+.recent-project-item:focus-within {
+  border-color: var(--accent);
+}
+.recent-project-open {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  padding: 10px 8px;
+  text-align: left;
+  border-color: transparent;
+  background: transparent;
+}
+.recent-project-open strong {
+  font-size: 15px;
+  color: var(--text);
+}
+.recent-project-open span,
+.recent-project-open time {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+.recent-project-remove {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.recent-project-empty {
+  padding: 24px;
+  border: 1px dashed var(--border);
+}
+@media (max-height: 850px) {
+  .welcome {
+    padding-top: 24px;
+  }
+  .welcome-cards {
+    margin: 22px 0;
+  }
+  .welcome article {
+    padding: 18px;
+  }
+  .welcome article h2 {
+    margin-top: 16px;
+  }
+}
+.recent-projects-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.recent-projects-heading .eyebrow {
+  font-size: 11px;
+}
+.recent-projects-heading h2 {
+  margin-top: 6px;
+}
+.recent-project-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--danger);
+  padding: 12px;
+  color: var(--danger);
+  overflow-wrap: anywhere;
+}
+.recent-project-warning {
+  color: var(--warning);
+}
+.recent-project-notice {
+  color: var(--muted);
+  font-size: 12px;
+}

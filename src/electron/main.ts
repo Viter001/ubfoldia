@@ -15,6 +15,13 @@ import {
 } from '../core/project';
 import { saveProject, loadProject, checkedAssetPath } from './storage';
 import {
+  addRecentProject,
+  canonicalRecentPath,
+  readRecentProjects,
+  removeRecentProject,
+  writeRecentProjects,
+} from './recent-projects';
+import {
   confirmLeave,
   isTrustedSender,
   type LeaveChoice,
@@ -47,6 +54,7 @@ const leaveWaiters = new Map<
 >();
 let leaveOpen = false;
 let rendererGone = false;
+let recentWarning = '';
 const LEAVE_TIMEOUT = 5 * 60 * 1000;
 function flushRenderer(): Promise<void> {
   if (!win || win.isDestroyed() || win.webContents.isDestroyed())
@@ -106,6 +114,21 @@ async function publish() {
 async function save() {
   await saveProject(root, active().project);
   saved = JSON.stringify({ ...active().project, revision: 0 });
+}
+function takeRecentWarning() {
+  const warning = recentWarning;
+  recentWarning = '';
+  return warning;
+}
+async function rememberRecentProject(name: string, dir: string) {
+  const userData = app.getPath('userData');
+  const history = await readRecentProjects(userData);
+  const entries = addRecentProject(history.entries, {
+    name,
+    path: dir,
+    lastOpenedAt: new Date().toISOString(),
+  });
+  await writeRecentProjects(userData, entries);
 }
 function sendLeaveResult(result: LeaveResult) {
   if (!win || win.isDestroyed() || win.webContents.isDestroyed()) return;
@@ -177,6 +200,14 @@ async function openDirectory(dir: string) {
   approvedRoots = [];
   agentReceipts.clear();
   media.clear();
+  recentWarning = '';
+  try {
+    await rememberRecentProject(project.name, dir);
+  } catch (error) {
+    recentWarning =
+      '工程已打开，但最近工程记录未能保存：' +
+      (error instanceof Error ? error.message : String(error));
+  }
 }
 async function importFile(source: string): Promise<Asset> {
   const sourceReal = await realpath(source),
@@ -336,8 +367,11 @@ async function agentCall(name: string, args: any) {
 }
 async function handle(action: string, payload: any) {
   switch (action) {
-    case 'state':
-      return state();
+    case 'state': {
+      const current = await state();
+      const warning = takeRecentWarning();
+      return warning ? { ...current, recentWarning: warning } : current;
+    }
     case 'new': {
       if (!(await mayLeave('new'))) return null;
       const project = createProject(payload.name, payload.width, payload.height);
@@ -359,6 +393,42 @@ async function handle(action: string, payload: any) {
       await saveProject(dir, project);
       await openDirectory(dir);
       break;
+    }
+    case 'recent-open': {
+      const requested = typeof payload === 'string' ? payload : payload?.path;
+      if (typeof requested !== 'string' || !requested) throw Error('缺少要打开的工程路径');
+      const history = await readRecentProjects(app.getPath('userData'));
+      const key = canonicalRecentPath(requested);
+      const entry = history.entries.find((item) => canonicalRecentPath(item.path) === key);
+      if (!entry) throw Error('该工程不在最近工程列表中，请重新打开。');
+      if (!(await mayLeave('open'))) return null;
+      try {
+        await openDirectory(entry.path);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+          throw Error('无法打开最近工程：工程文件不存在或已被移动。');
+        }
+        throw Error(
+          '无法打开最近工程：' + (error instanceof Error ? error.message : String(error)),
+        );
+      }
+      break;
+    }
+    case 'recent-projects':
+      return readRecentProjects(app.getPath('userData'));
+    case 'recent-remove': {
+      const projectPath =
+        typeof payload === 'string'
+          ? payload
+          : typeof payload?.path === 'string'
+            ? payload.path
+            : '';
+      if (!projectPath) throw Error('缺少要移除的工程路径');
+      const userData = app.getPath('userData');
+      const history = await readRecentProjects(userData);
+      const entries = removeRecentProject(history.entries, projectPath);
+      await writeRecentProjects(userData, entries);
+      return { entries, warning: history.warning };
     }
     case 'open': {
       if (!(await mayLeave('open'))) return null;
@@ -415,7 +485,9 @@ async function handle(action: string, payload: any) {
     default:
       throw Error('未知操作');
   }
-  return publish();
+  const snapshot = await publish();
+  const warning = takeRecentWarning();
+  return warning ? { ...snapshot, recentWarning: warning } : snapshot;
 }
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
@@ -504,7 +576,7 @@ else {
       ipcMain.handle('studio', async (event, action, payload) => {
         if (!trusted(event)) throw Error('INVALID_SENDER');
         try {
-          if (['save', 'open', 'new'].includes(action)) await flushRenderer();
+          if (['save', 'open', 'new', 'recent-open'].includes(action)) await flushRenderer();
           return { ok: true, value: await serialize(() => handle(action, payload)) };
         } catch (e) {
           return { ok: false, error: e instanceof Error ? e.message : String(e) };

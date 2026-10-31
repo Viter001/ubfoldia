@@ -16,6 +16,7 @@ import { issues, type Project, type Page, type Layer, type Command } from '../co
 import { type State, assetURL } from './api';
 import { Scene, Player } from './Scene';
 import { LeaveDialog } from './LeaveDialog';
+import { RecentProjects } from './RecentProjects';
 import { globalKeyIntent, leaveReducer, type LeaveChoice, type LeaveState } from './leave';
 import { classifyEdge, EDGE_DIRECTION_COLORS, type EdgeDirection } from './edge-direction';
 import { WindowTitleBar } from './WindowTitleBar';
@@ -159,6 +160,7 @@ export function App() {
       const r = await window.studio.invoke(action, payload);
       if (!r.ok) throw Error(r.error);
       if (r.value?.project !== undefined) setState(r.value);
+      if (r.value?.recentWarning) setMessage(r.value.recentWarning);
       return r.value;
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -166,6 +168,24 @@ export function App() {
       if (action === 'new') setNewError(message);
       return null;
     }
+  }
+  async function openRecent(path: string) {
+    setError('');
+    setMessage('');
+    stopAudition();
+    const r = await window.studio.invoke('recent-open', path);
+    if (!r.ok) throw Error(r.error || '无法打开最近工程');
+    if (!r.value?.project) return false;
+    setState(r.value);
+    if (r.value.recentWarning) setMessage(r.value.recentWarning);
+    setMode('flow');
+    setCommandTab('开始');
+    setSelected('');
+    setLayerId('');
+    setEdgeId('');
+    viewport.current = { x: 40, y: 40, zoom: 0.8 };
+    flow.current?.setViewport({ x: 40, y: 40, zoom: 0.8 });
+    return true;
   }
   const command = (c: Command) => invoke('command', c);
   function edit(id: string) {
@@ -501,6 +521,7 @@ export function App() {
           <button className="large" onClick={() => invoke('open')}>
             打开已有工程
           </button>
+          <RecentProjects onOpen={openRecent} />
         </main>
       ) : (
         <>
