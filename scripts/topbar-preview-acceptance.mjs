@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 
 // Topbar removal + fixed preview entry acceptance.
 //   node scripts/topbar-preview-acceptance.mjs
-// Use STUDIO_EXECUTABLE=<PictureBookStudio.exe> to verify a packaged build.
+// Use STUDIO_EXECUTABLE=<Ubfoldia.exe> to verify a packaged build.
 const run = resolve('.agent/runs/topbar-preview/' + Date.now());
 const projectDir = join(run, 'project');
 const profile = join(run, 'profile');
@@ -21,8 +21,8 @@ const projectName = sample.name;
 const startPage = sample.pages.find((page) => page.id === sample.startPageId);
 const otherPage = sample.pages.find((page) => page.id !== sample.startPageId);
 assert.ok(startPage && otherPage, 'sample project has a start page and another page');
-const WELCOME_TITLE = '绘境 · 交互叙事工作台';
-const baseTitle = `绘境 · ${projectName}`;
+const WELCOME_TITLE = '未视之视 · 交互叙事工作台';
+const baseTitle = `未视之视 · ${projectName}`;
 const dirtyTitle = `${baseTitle} · 未保存`;
 const shots = [];
 

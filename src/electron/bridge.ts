@@ -7,11 +7,11 @@ import { join } from 'node:path';
 const endpoint =
   process.env.STUDIO_ENDPOINT ||
   join(
-    process.env.STUDIO_USER_DATA || join(process.env.APPDATA || '', 'picture-book-studio'),
+    process.env.STUDIO_USER_DATA || join(process.env.APPDATA || '', 'ubfoldia'),
     'agent-endpoint.json',
   );
 const server = new McpServer(
-  { name: 'picture-book-studio', version: '0.1.0' },
+  { name: 'ubfoldia', version: '0.1.0' },
   {
     instructions:
       '先 project_get。修改请求使用 project.id 和 revision。新操作用新 requestId；重试保留同一 requestId 和完全相同参数。版本冲突后重新读取工程。用户撤销不撤回历史请求回执；重开工程后应重新读取并发起新请求。',

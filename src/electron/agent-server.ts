@@ -5,8 +5,8 @@ import type { SerialQueue } from './queue';
 
 export function agentPipePath(platform: NodeJS.Platform, pid: number, tempDir: string) {
   return platform === 'win32'
-    ? `\\\\.\\pipe\\picture-book-studio-${pid}`
-    : join(tempDir, `picture-book-studio-${pid}.sock`);
+    ? `\\\\.\\pipe\\ubfoldia-${pid}`
+    : join(tempDir, `ubfoldia-${pid}.sock`);
 }
 
 export async function writeAgentEndpoint(

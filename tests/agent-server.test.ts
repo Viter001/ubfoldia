@@ -117,6 +117,6 @@ test('oversized frames close the socket instead of buffering forever', () => {
 });
 
 test('the agent pipe name is stable and platform specific', () => {
-  assert.match(agentPipePath('win32', 42, 'C:/temp'), /picture-book-studio-42$/);
-  assert.match(agentPipePath('linux', 42, '/tmp'), /picture-book-studio-42\.sock$/);
+  assert.match(agentPipePath('win32', 42, 'C:/temp'), /ubfoldia-42$/);
+  assert.match(agentPipePath('linux', 42, '/tmp'), /ubfoldia-42\.sock$/);
 });

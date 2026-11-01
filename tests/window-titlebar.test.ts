@@ -20,16 +20,19 @@ test('the window title stays compact and only marks an unsaved project', () => {
   assert.equal(windowTitle(), WINDOW_TITLE);
   assert.equal(windowTitle(null), WINDOW_TITLE);
   assert.equal(windowTitle('   '), WINDOW_TITLE);
-  assert.equal(windowTitle('林间来信'), '绘境 · 林间来信');
-  assert.equal(windowTitle(' 林间来信 ', false), '绘境 · 林间来信');
-  assert.equal(windowTitle('林间来信', true), '绘境 · 林间来信 · 未保存');
-  assert.equal(WINDOW_TITLE, '绘境 · 交互叙事工作台');
+  assert.equal(windowTitle('林间来信'), '未视之视 · 林间来信');
+  assert.equal(windowTitle(' 林间来信 ', false), '未视之视 · 林间来信');
+  assert.equal(windowTitle('林间来信', true), '未视之视 · 林间来信 · 未保存');
+  assert.equal(WINDOW_TITLE, '未视之视 · 交互叙事工作台');
 });
 
 test('document.title follows the visible title on every platform', () => {
   const target = { title: WINDOW_TITLE };
-  assert.equal(applyDocumentTitle('绘境 · 林间来信 · 未保存', target), '绘境 · 林间来信 · 未保存');
-  assert.equal(target.title, '绘境 · 林间来信 · 未保存');
+  assert.equal(
+    applyDocumentTitle('未视之视 · 林间来信 · 未保存', target),
+    '未视之视 · 林间来信 · 未保存',
+  );
+  assert.equal(target.title, '未视之视 · 林间来信 · 未保存');
   assert.equal(applyDocumentTitle(WINDOW_TITLE, null), WINDOW_TITLE);
 });
 
@@ -44,7 +47,7 @@ test('Windows renders a single drag strip with the project title', () => {
   assert.match(html, /<div class="window-titlebar">/);
   assert.match(
     html,
-    /<span class="window-title" title="绘境 · 林间来信 · 未保存">绘境 · 林间来信<\/span>/,
+    /<span class="window-title" title="未视之视 · 林间来信 · 未保存">未视之视 · 林间来信<\/span>/,
   );
   assert.match(html, /<span class="save-status">● 未保存<\/span>/);
   assert.equal((html.match(/<button/g) ?? []).length, 0, 'no hand-made window buttons');

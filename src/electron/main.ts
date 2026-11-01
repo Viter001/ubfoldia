@@ -14,6 +14,7 @@ import { AgentService } from './agent';
 import { StudioRouter } from './router';
 import { registerStudioIpc } from './ipc';
 import { agentPipePath, startAgentTransport, writeAgentEndpoint } from './agent-server';
+import { migrateLegacyUserData } from './migration';
 import type { State } from '../shared/studio';
 
 if (process.env.STUDIO_USER_DATA) {
@@ -41,6 +42,9 @@ else {
   app
     .whenReady()
     .then(async () => {
+      // The rename to Ubfoldia changed the userData folder; carry the recent list over once.
+      const migrated = migrateLegacyUserData(app.getPath('appData'), app.getPath('userData'));
+      if (migrated.length) console.log('迁移旧用户数据：' + migrated.join('、'));
       decoder = new BrowserWindow({
         show: false,
         webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
@@ -52,7 +56,7 @@ else {
         height: 960,
         minWidth: 1000,
         minHeight: 700,
-        title: '绘境 · 交互叙事工作台',
+        title: '未视之视 · 交互叙事工作台',
         backgroundColor: '#0d0f0e',
         // Windows draws the native caption buttons as an overlay while the
         // renderer supplies the rest of the title bar. Other platforms keep

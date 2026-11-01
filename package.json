@@ -1,6 +1,7 @@
 {
-  "name": "picture-book-studio",
+  "name": "ubfoldia",
   "version": "0.1.0",
+  "description": "Ubfoldia · Interactive Narrative Studio（未视之视）",
   "private": true,
   "type": "module",
   "main": "dist-electron/main.cjs",

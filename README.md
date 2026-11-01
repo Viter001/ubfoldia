@@ -1,10 +1,12 @@
-# 绘境 · 交互叙事工作台
+# 未视之视 · 交互叙事工作台
+
+**Ubfoldia · Interactive Narrative Studio**
 
 Electron + React + 自有作品模型的本地创作工具。当前为 **0.1.0 开发预览版**：可以制作、预览、保存互动绘本，外部 Agent 通过 MCP 协助编辑。生产界面已接入终端优先的深色主题、Windows 原生按钮覆盖式标题栏、按用途划分的六类功能区、固定的预览分体按钮和任务内转场／动画设置、按前进／循环／后退着色的流程连线，以及同风格退出确认；重复的品牌／全局操作行已移除，作品画面本身不套用编辑器主题。
 
 ## 直接试用
 
-1. 将 `release/PictureBookStudio-0.1.0-win32-x64.zip` 完整解压到普通应用目录（例如 `E:/Apps`），再打开其中的 `PictureBookStudio.exe`，保留同目录其他文件。本机 2026-10-30 已验证的试用副本位于 `E:/Test/PictureBookStudio/PictureBookStudio.exe`；后续新版统一放这里并删除旧版。
+1. 将 `release/ubfoldia-0.1.0-win32-x64.zip` 完整解压到普通应用目录（例如 `E:/Apps`），再打开其中的 `Ubfoldia.exe`，保留同目录其他文件。本机 2026-10-30 已验证的试用副本位于 `E:/Test/Ubfoldia/Ubfoldia.exe`；后续新版统一放这里并删除旧版。
 2. 点击“打开”，选择同目录 `示例工程/林间来信/project.json`。
 3. 双击页面卡片编辑图片、文字、图层和声音；返回流程配置出口；点击“从头预览”。
 4. 新建工程时选择名称、画布尺寸和空文件夹。导入的素材会复制到工程 `assets/`；搬移作品时复制整个工程文件夹。
@@ -46,15 +48,15 @@ npm run package
 
 Windows x64 应用包已生成；功能证据、环境限制和未完成验收项见本地验收记录（不提交远程仓库）。2026-10-29 已定位工作区低完整性标签造成的启动问题；同一程序部署到普通目录后，默认 GPU/沙箱的真实 Electron 编辑和分支预览回归通过。此前“需关闭沙箱才能自动化”的记录是受影响目录下的历史结果，不再作为交付方式。真实系统 DPI 与用户体验仍待人工验收。
 
-本版不包含视频、隐藏数值/条件系统、云同步、作品独立网页或游戏发布。源码已推送到私有 GitHub 仓库 [Viter001/picture-book-studio](https://github.com/Viter001/picture-book-studio)；未上传安装包或创建公开 Release。
+本版不包含视频、隐藏数值/条件系统、云同步、作品独立网页或游戏发布。源码已推送到公开 GitHub 仓库 [Viter001/ubfoldia](https://github.com/Viter001/ubfoldia)（原名 picture-book-studio）；未上传安装包或创建 Release。仓库当前无 LICENSE 文件，版权仍归作者保留。
 
 ## 项目文档与问题
 
 - [全局设计与发展规划](docs/product-roadmap.md)
 - [MVP 实施基线 v0.7](docs/product-plan-mvp.md)
 - [外部 Agent 工具说明](docs/agent-tools.md)
-- [GitHub Issues](https://github.com/Viter001/picture-book-studio/issues)：同步当前待裁决、反馈和待办。
+- [GitHub Issues](https://github.com/Viter001/ubfoldia/issues)：同步当前待裁决、反馈和待办。
 
 项目协作约定、决策全文、反馈详情、开发/讨论记录、实施计划、验收证据和截图属于本地管理记录，已加入 `.gitignore`，不提交到 GitHub。当前未关闭事项以 GitHub Issues 为准。DSH 已提供接入步骤，尚无已安装或连接成功的实测记录；见 [DSH 接入](docs/agent-tools.md#dsh)。
 
-原绘本 `E:/code saving/INTERACTIVE-NARRATIVE-SYSTEM/` 只作参考，本次未修改。项目使用已安装的 project-change-delivery 技能，代码与记录通过私有 GitHub 仓库管理。
+原绘本 `E:/code saving/INTERACTIVE-NARRATIVE-SYSTEM/` 只作参考，本次未修改。项目使用已安装的 project-change-delivery 技能，代码与记录通过公开 GitHub 仓库管理。

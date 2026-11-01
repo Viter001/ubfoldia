@@ -10,7 +10,7 @@ process.env.TEMP = temp;
 process.env.TMP = temp;
 const paths = await packager({
   dir: root,
-  name: 'PictureBookStudio',
+  name: 'Ubfoldia',
   platform: 'win32',
   arch: 'x64',
   out,
@@ -32,12 +32,12 @@ for (const path of paths) {
   await cp(join(root, 'docs/agent-tools.md'), join(path, 'Agent接入说明.md'));
   await writeFile(
     join(path, '打开示例.cmd'),
-    '@echo off\r\nchcp 65001 >nul\r\nstart "" "%~dp0PictureBookStudio.exe" "--project=%~dp0示例工程\\林间来信"\r\n',
+    '@echo off\r\nchcp 65001 >nul\r\nstart "" "%~dp0Ubfoldia.exe" "--project=%~dp0示例工程\\林间来信"\r\n',
   );
   console.log(path);
   // ZIP carries application bytes, not the build workspace's Windows integrity labels.
   // Extract into a normal application directory; do not change workspace ACLs.
-  const archive = join(out, 'PictureBookStudio-0.1.0-win32-x64.zip');
+  const archive = join(out, 'ubfoldia-0.1.0-win32-x64.zip');
   execFileSync(
     'powershell.exe',
     [

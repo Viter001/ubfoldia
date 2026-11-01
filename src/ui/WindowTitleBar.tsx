@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const WINDOW_TITLE = '绘境 · 交互叙事工作台';
+export const WINDOW_TITLE = '未视之视 · 交互叙事工作台';
 
 /**
  * The custom title bar exists only on Windows, where the main process hides the
@@ -15,7 +15,7 @@ export function showsWindowTitleBar(platform: string | null | undefined): boolea
 export function windowTitle(projectName?: string | null, dirty = false): string {
   const name = projectName?.trim();
   if (!name) return WINDOW_TITLE;
-  return `绘境 · ${name}${dirty ? ' · 未保存' : ''}`;
+  return `未视之视 · ${name}${dirty ? ' · 未保存' : ''}`;
 }
 
 /** Keep document.title (and therefore the native window title) in sync. */
@@ -38,7 +38,7 @@ export function WindowTitleBar({
 }) {
   const host = platform ?? (typeof window !== 'undefined' ? window.studio?.platform : undefined);
   const name = projectName?.trim();
-  const base = name ? `绘境 · ${name}` : WINDOW_TITLE;
+  const base = name ? `未视之视 · ${name}` : WINDOW_TITLE;
   const title = windowTitle(name, dirty);
 
   useEffect(() => {

@@ -5,16 +5,16 @@ import assert from 'node:assert/strict';
 
 // Window chrome + ribbon grouping acceptance.
 //   node scripts/ribbon-window-acceptance.mjs
-// Use STUDIO_EXECUTABLE=<PictureBookStudio.exe> to verify a packaged build
-// (the current trial entry is E:/Test/PictureBookStudio/PictureBookStudio.exe).
+// Use STUDIO_EXECUTABLE=<Ubfoldia.exe> to verify a packaged build
+// (the current trial entry is E:/Test/Ubfoldia/Ubfoldia.exe).
 // CSS geometry checks are advisory until the stylesheet lands; set
 // STUDIO_STRICT_VISUAL=1 after CSS integration to make them hard failures.
 
 const evidence = resolve('.agent/runs/ribbon-window/evidence');
 await mkdir(evidence, { recursive: true });
 const strictVisual = process.env.STUDIO_STRICT_VISUAL === '1';
-const WELCOME_TITLE = '绘境 · 交互叙事工作台';
-const projectTitle = (name) => `绘境 · ${name}`;
+const WELCOME_TITLE = '未视之视 · 交互叙事工作台';
+const projectTitle = (name) => `未视之视 · ${name}`;
 const dirtyTitle = (name) => `${projectTitle(name)} · 未保存`;
 
 function visual(ok, message) {
