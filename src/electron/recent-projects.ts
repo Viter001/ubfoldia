@@ -1,12 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { isAbsolute, join, posix, win32 } from 'node:path';
-
-export type RecentProject = {
-  name: string;
-  path: string;
-  lastOpenedAt: string;
-};
+import type { RecentProject } from '../shared/studio';
+export type { RecentProject } from '../shared/studio';
 
 export type RecentProjectsRead = {
   entries: RecentProject[];
