@@ -1117,6 +1117,13 @@ button:disabled {
   white-space: nowrap;
   line-height: 1.2;
 }
+.window-brand-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 7px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
 .window-titlebar button,
 .window-titlebar a {
   -webkit-app-region: no-drag;

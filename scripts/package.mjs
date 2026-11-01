@@ -11,6 +11,7 @@ process.env.TMP = temp;
 const paths = await packager({
   dir: root,
   name: 'Ubfoldia',
+  icon: join(root, 'public/brand/ubfoldia.ico'),
   platform: 'win32',
   arch: 'x64',
   out,

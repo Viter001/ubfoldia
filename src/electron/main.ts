@@ -57,6 +57,11 @@ else {
         minWidth: 1000,
         minHeight: 700,
         title: '未视之视 · 交互叙事工作台',
+        icon: join(
+          __dirname,
+          '../dist/brand',
+          process.platform === 'win32' ? 'ubfoldia.ico' : 'ubfoldia.png',
+        ),
         backgroundColor: '#0d0f0e',
         // Windows draws the native caption buttons as an overlay while the
         // renderer supplies the rest of the title bar. Other platforms keep

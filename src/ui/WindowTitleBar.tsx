@@ -48,6 +48,14 @@ export function WindowTitleBar({
   if (!showsWindowTitleBar(host)) return null;
   return (
     <div className="window-titlebar">
+      <img
+        className="window-brand-icon"
+        src="./brand/ubfoldia.png"
+        width="20"
+        height="20"
+        alt=""
+        draggable={false}
+      />
       <span className="window-title" title={title}>
         {base}
       </span>
