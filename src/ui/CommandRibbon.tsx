@@ -1,5 +1,6 @@
 import type { Command, Layer, Page, Project } from '../core/project';
 import { COMMAND_GROUPS, type CommandGroup, type WorkspaceMode } from './interaction';
+import { PreviewMenu } from './PreviewMenu';
 import { RibbonGroup } from './RibbonControls';
 import { DurationField, LayerEffectSelect, TransitionSelect } from './EffectControls';
 
@@ -58,34 +59,36 @@ export function CommandRibbon({
 }: CommandRibbonProps) {
   return (
     <>
-      <nav className="command-tabs" role="tablist" aria-label="命令分组">
-        {COMMAND_GROUPS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            role="tab"
-            id={`command-tab-${item}`}
-            aria-controls="command-ribbon"
-            aria-selected={group === item}
-            tabIndex={group === item ? 0 : -1}
-            className={`command-tab${group === item ? ' active' : ''}`}
-            onClick={() => onGroup(item)}
-            onKeyDown={(event) => {
-              const index = COMMAND_GROUPS.indexOf(item);
-              if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-              event.preventDefault();
-              const next =
-                COMMAND_GROUPS[
-                  (index + (event.key === 'ArrowRight' ? 1 : -1) + COMMAND_GROUPS.length) %
-                    COMMAND_GROUPS.length
-                ];
-              onGroup(next);
-              document.getElementById(`command-tab-${next}`)?.focus();
-            }}
-          >
-            {item}
-          </button>
-        ))}
+      <div className="workspace-toolbar">
+        <nav className="command-tabs" role="tablist" aria-label="命令分组">
+          {COMMAND_GROUPS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              role="tab"
+              id={`command-tab-${item}`}
+              aria-controls="command-ribbon"
+              aria-selected={group === item}
+              tabIndex={group === item ? 0 : -1}
+              className={`command-tab${group === item ? ' active' : ''}`}
+              onClick={() => onGroup(item)}
+              onKeyDown={(event) => {
+                const index = COMMAND_GROUPS.indexOf(item);
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                const next =
+                  COMMAND_GROUPS[
+                    (index + (event.key === 'ArrowRight' ? 1 : -1) + COMMAND_GROUPS.length) %
+                      COMMAND_GROUPS.length
+                  ];
+                onGroup(next);
+                document.getElementById(`command-tab-${next}`)?.focus();
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </nav>
         <div className="workspace-context">
           {mode === 'page' && page ? (
             <>
@@ -103,26 +106,33 @@ export function CommandRibbon({
             </>
           )}
         </div>
-        <div className="workspace-switch" role="group" aria-label="工作区切换">
-          <button
-            type="button"
-            className={mode === 'flow' ? 'active' : ''}
-            aria-pressed={mode === 'flow'}
-            onClick={onShowFlow}
-          >
-            ◇ 流程编排
-          </button>
-          <button
-            type="button"
-            className={mode === 'page' ? 'active' : ''}
-            aria-pressed={mode === 'page'}
-            disabled={!page}
-            onClick={onShowPage}
-          >
-            ▣ 页面编辑
-          </button>
+        <div className="workspace-actions">
+          <div className="workspace-switch" role="group" aria-label="工作区切换">
+            <button
+              type="button"
+              className={mode === 'flow' ? 'active' : ''}
+              aria-pressed={mode === 'flow'}
+              onClick={onShowFlow}
+            >
+              ◇ 流程编排
+            </button>
+            <button
+              type="button"
+              className={mode === 'page' ? 'active' : ''}
+              aria-pressed={mode === 'page'}
+              disabled={!page}
+              onClick={onShowPage}
+            >
+              ▣ 页面编辑
+            </button>
+          </div>
+          <PreviewMenu
+            startPageId={project.startPageId}
+            currentPageId={page?.id ?? null}
+            onPreview={onPreview}
+          />
         </div>
-      </nav>
+      </div>
       <div
         id="command-ribbon"
         className="command-ribbon"
@@ -139,7 +149,7 @@ export function CommandRibbon({
                 <button type="button" onClick={onOpen}>
                   打开
                 </button>
-                <button type="button" onClick={onSave}>
+                <button type="button" onClick={onSave} title="Ctrl+S">
                   保存
                 </button>
               </RibbonGroup>
@@ -177,11 +187,6 @@ export function CommandRibbon({
                   导入素材
                 </button>
               </RibbonGroup>
-              <RibbonGroup title="预览">
-                <button type="button" disabled={!page} onClick={() => onPreview(page?.id ?? null)}>
-                  预览当前页
-                </button>
-              </RibbonGroup>
               <small className="muted">
                 {mode === 'flow' ? '编排故事的路径与节奏' : '编辑页面中的内容与图层'}
               </small>
@@ -214,16 +219,6 @@ export function CommandRibbon({
           )}
           {group === '转场' && (
             <>
-              <RibbonGroup title="预览">
-                <button
-                  type="button"
-                  disabled={!page}
-                  title="在阅读预览中观察实际转场"
-                  onClick={() => onPreview(page?.id ?? null)}
-                >
-                  预览当前页
-                </button>
-              </RibbonGroup>
               <RibbonGroup title="页面转场">
                 {page ? (
                   <>
@@ -269,16 +264,6 @@ export function CommandRibbon({
           )}
           {group === '动画' && (
             <>
-              <RibbonGroup title="预览">
-                <button
-                  type="button"
-                  disabled={!page}
-                  title="在阅读预览中观察图层进场动画"
-                  onClick={() => onPreview(page?.id ?? null)}
-                >
-                  预览当前页
-                </button>
-              </RibbonGroup>
               <RibbonGroup title="对象动画">
                 {layer && page ? (
                   <>

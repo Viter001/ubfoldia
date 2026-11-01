@@ -55,6 +55,7 @@ try {
   }
   console.log('Launch isolation', JSON.stringify(isolation));
   await page.getByText('流程工作区', { exact: true }).waitFor();
+  assert.equal(await page.locator('.topbar').count(), 0, 'duplicate topbar removed');
   await page.screenshot({ path: '.agent/runs/mvp/evidence/flow.png' });
   for (const zoom of [1, 1.25, 1.5]) {
     await app.evaluate(
@@ -72,7 +73,7 @@ try {
         width: innerWidth,
         scroll: document.documentElement.scrollWidth,
         ratio: devicePixelRatio,
-        bar: document.querySelector('.topbar').getBoundingClientRect().width,
+        bar: document.querySelector('.workspace-toolbar').getBoundingClientRect().width,
       })),
     );
     const capture = await app.evaluate(async ({ BrowserWindow }) =>
@@ -89,7 +90,7 @@ try {
       Buffer.from(capture, 'base64'),
     );
     const right = await page
-      .locator('.top-actions')
+      .locator('.workspace-actions')
       .evaluate((el) => el.getBoundingClientRect().right);
     assert.ok(
       right <= (await page.evaluate(() => innerWidth)) + 2,
@@ -107,7 +108,7 @@ try {
   await page.locator('.inspector .panel-title').filter({ hasText: '图层属性' }).waitFor();
   await page.screenshot({ path: '.agent/runs/mvp/evidence/editor.png' });
   await page.getByRole('button', { name: '撤销', exact: true }).click();
-  await page.getByRole('button', { name: '▶ 从头预览', exact: true }).click();
+  await page.getByRole('button', { name: '从头预览', exact: true }).click();
   await page.getByRole('button', { name: '展开信笺', exact: true }).click();
   await page.getByRole('button', { name: '追随萤火', exact: true }).waitFor();
   await page.getByRole('button', { name: '追随萤火', exact: true }).click();

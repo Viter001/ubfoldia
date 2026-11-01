@@ -137,7 +137,7 @@ try {
   rev = added.data.revision;
   assert.deepEqual((await tool('pages_add', args)).data, added.data);
   assert.ok((await tool('pages_add', { ...args, requestId: crypto.randomUUID() })).error);
-  await page.getByRole('button', { name: '▶ 从头预览', exact: true }).click();
+  await page.getByRole('button', { name: '从头预览', exact: true }).click();
   const beforeScene = await page.locator('.player-stage').innerText();
   const linked = await tool('pages_connect', {
     ...envFor(),

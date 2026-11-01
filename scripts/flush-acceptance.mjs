@@ -36,7 +36,8 @@ try {
   await page.getByRole('button', { name: '编辑页面 ↗', exact: true }).first().click();
   await page.locator('.layer-name').filter({ hasText: '故事文字' }).click();
   await page.getByLabel('文字内容').fill('尚未失焦的预览文字');
-  await page.getByRole('button', { name: '预览当前页', exact: true }).click();
+  await page.getByRole('button', { name: '预览选项', exact: true }).click();
+  await page.getByRole('menuitem', { name: '从当前页预览', exact: true }).click();
   await page.locator('.player-stage').getByText('尚未失焦的预览文字', { exact: true }).waitFor();
   await page.getByRole('button', { name: '退出预览 Esc' }).click();
   await page.getByLabel('文字内容').fill('输入状态按快捷键保存');
@@ -47,6 +48,7 @@ try {
   await app.evaluate(({ dialog }, path) => {
     dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
   }, dir);
+  await page.getByRole('tab', { name: '文件', exact: true }).click();
   await page.getByRole('button', { name: '新建', exact: true }).click();
   await page.getByRole('button', { name: '选择位置并创建', exact: true }).click();
   await page.locator('.modal .form-error').filter({ hasText: '已有工程' }).waitFor();

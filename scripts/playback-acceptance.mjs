@@ -51,7 +51,7 @@ try {
   const original = (await invoke('state')).value.project;
   const [p1, p2, p3] = original.pages;
   await command({ type: 'page.patch', pageId: p2.id, patch: { music: p1.music, voice: p1.voice } });
-  await page.getByRole('button', { name: '▶ 从头预览', exact: true }).click();
+  await page.getByRole('button', { name: '从头预览', exact: true }).click();
   await page.waitForFunction(
     () => window.__audios.filter((a) => !a.paused && a.currentTime > 0).length === 2,
   );
@@ -92,10 +92,11 @@ try {
   assert.ok(await page.evaluate(() => window.__audios.every((a) => a.paused)));
   assert.equal(await page.locator('.player-scene').count(), 0);
   await command({ type: 'start.set', pageId: null });
-  assert.ok(await page.getByRole('button', { name: '▶ 从头预览', exact: true }).isDisabled());
+  assert.ok(await page.getByRole('button', { name: '从头预览', exact: true }).isDisabled());
   await command({ type: 'exit.add', pageId: p1.id, label: '未完成选择', target: null });
   await page.locator(`.react-flow__node[data-id="${p1.id}"]`).click();
-  await page.getByRole('button', { name: '预览当前页', exact: true }).click();
+  await page.getByRole('button', { name: '预览选项', exact: true }).click();
+  await page.getByRole('menuitem', { name: '从当前页预览', exact: true }).click();
   assert.ok(
     await page.getByRole('button', { name: '未完成选择 · 未连接', exact: true }).isDisabled(),
   );

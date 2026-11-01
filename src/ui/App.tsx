@@ -192,7 +192,7 @@ export function App() {
   if (preview)
     return (
       <div className="app player-shell">
-        <WindowTitleBar />
+        <WindowTitleBar projectName={project?.name} dirty={state.dirty} />
         <Player
           snapshot={preview.snapshot}
           startId={preview.startId}
@@ -207,38 +207,7 @@ export function App() {
 
   return (
     <div className="app">
-      <WindowTitleBar />
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-mark">绘</span>
-          <div>
-            <strong>绘境</strong>
-            <small>交互叙事工作台</small>
-          </div>
-        </div>
-        <div className="project-title">
-          {project?.name || '开始一个新故事'}
-          {project && <span className="save-status">{state.dirty ? '● 未保存' : '已保存'}</span>}
-        </div>
-        <div className="top-actions">
-          <button onClick={openNew}>新建</button>
-          <button onClick={openProject}>打开</button>
-          {project && (
-            <>
-              <button onClick={() => invoke('save')} title="Ctrl+S">
-                保存
-              </button>
-              <button
-                className="primary"
-                disabled={!project.startPageId}
-                onClick={() => start(project.startPageId)}
-              >
-                ▶ 从头预览
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+      <WindowTitleBar projectName={project?.name} dirty={state.dirty} />
       {(error || message) && (
         <div role="status" className={`banner ${error ? 'error' : ''}`}>
           <span>{error || message}</span>

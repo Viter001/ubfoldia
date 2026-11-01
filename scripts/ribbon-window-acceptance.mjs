@@ -13,7 +13,9 @@ import assert from 'node:assert/strict';
 const evidence = resolve('.agent/runs/ribbon-window/evidence');
 await mkdir(evidence, { recursive: true });
 const strictVisual = process.env.STUDIO_STRICT_VISUAL === '1';
-const TITLE = '绘境 · 交互叙事工作台';
+const WELCOME_TITLE = '绘境 · 交互叙事工作台';
+const projectTitle = (name) => `绘境 · ${name}`;
+const dirtyTitle = (name) => `${projectTitle(name)} · 未保存`;
 
 function visual(ok, message) {
   if (ok) console.log('VISUAL PASS:', message);
@@ -62,6 +64,8 @@ const { app, page } = await launch(
 
 try {
   await page.getByText('流程工作区', { exact: true }).waitFor();
+  const initialState = await page.evaluate(async () => (await window.studio.invoke('state')).value);
+  const name = initialState.project.name;
 
   // 1. Renderer platform contract: exposed, equal to the host, read-only,
   //    and no extra bridge methods were added.
@@ -120,8 +124,11 @@ try {
   // 3. The renderer supplies one 32px title strip and no hand-made buttons.
   const titlebar = page.locator('.app > .window-titlebar');
   await titlebar.waitFor();
-  assert.equal(await titlebar.locator('.window-title').innerText(), TITLE);
+  assert.equal(await titlebar.locator('.window-title').innerText(), projectTitle(name));
+  assert.equal(await titlebar.locator('.save-status').count(), 0);
+  assert.equal(await page.evaluate(() => document.title), projectTitle(name));
   assert.equal(await titlebar.locator('button').count(), 0, 'no custom minimize/maximize/close');
+  assert.equal(await page.locator('.topbar').count(), 0, 'no duplicate topbar');
   const geometry = await titlebar.evaluate((el) => el.getBoundingClientRect().height);
   console.log('window-titlebar height (CSS 主代理):', geometry);
   visual(Math.abs(geometry - 32) < 0.5, `window-titlebar 高度应为 32px，实际 ${geometry}px`);
@@ -130,9 +137,23 @@ try {
     .evaluate((el) => getComputedStyle(el).flexWrap);
   visual(toolsWrap === 'nowrap', `command-tools 应横向不换行，实际 flex-wrap: ${toolsWrap}`);
 
-  // 4. Six command tabs with real grouped DOM.
+  // 4. Six command tabs with real grouped DOM. Tabs stay pure; context and
+  //    workspace/preview actions share the outer toolbar.
   const tabs = await page.locator('.command-tabs [role="tab"]').allInnerTexts();
   assert.deepEqual(tabs, ['文件', '开始', '插入', '转场', '动画', '视图']);
+  assert.equal(await page.locator('.workspace-toolbar > nav.command-tabs').count(), 1);
+  assert.equal(await page.locator('.command-tabs .workspace-context').count(), 0);
+  assert.equal(await page.locator('.workspace-toolbar > .workspace-context').count(), 1);
+  assert.equal(
+    await page.locator('.workspace-toolbar > .workspace-actions > .workspace-switch').count(),
+    1,
+  );
+  assert.equal(
+    await page.locator('.workspace-toolbar > .workspace-actions > .preview-control').count(),
+    1,
+  );
+  assert.equal(await page.getByRole('button', { name: '从头预览', exact: true }).count(), 1);
+  assert.equal(await page.getByRole('button', { name: '预览选项', exact: true }).count(), 1);
 
   async function groups() {
     return page.locator('#command-ribbon').evaluate((ribbon) => {
@@ -156,10 +177,10 @@ try {
 
   const expected = {
     文件: ['工程'],
-    开始: ['编辑历史', '页面', '素材', '预览'],
+    开始: ['编辑历史', '页面', '素材'],
     插入: ['内容', '素材', '页面'],
-    转场: ['预览', '页面转场', '计时', '换页方式'],
-    动画: ['预览', '对象动画', '计时', '触发与排序'],
+    转场: ['页面转场', '计时', '换页方式'],
+    动画: ['对象动画', '计时', '触发与排序'],
     视图: ['工作区', '画布'],
   };
   for (const [tab, labels] of Object.entries(expected)) {
@@ -176,6 +197,11 @@ try {
       assert.equal(group.title, group.label, 'ribbon-group-title mirrors aria-label');
       assert.equal(group.controls, 1, 'each group has one ribbon-group-controls');
     }
+    assert.equal(
+      await page.locator('#command-ribbon .ribbon-group[aria-label="预览"]').count(),
+      0,
+      tab + ' has no duplicate preview group',
+    );
     console.log('Ribbon', tab, labels.join(' / '));
   }
 
@@ -187,8 +213,13 @@ try {
     );
   }
   assert.deepEqual(await buttonNames('文件'), ['新建', '打开', '保存']);
-  for (const name of ['撤销', '重做', '＋ 新增页面', '导入素材', '预览当前页'])
+  for (const name of ['撤销', '重做', '＋ 新增页面', '导入素材'])
     assert.ok((await buttonNames('开始')).includes(name), '开始 keeps ' + name);
+  assert.equal(
+    (await buttonNames('开始')).includes('预览当前页'),
+    false,
+    '开始 preview group removed',
+  );
   for (const name of ['＋ 添加文字', '＋ 添加图片', '导入素材', '＋ 新增页面'])
     assert.ok((await buttonNames('插入')).includes(name), '插入 keeps ' + name);
   for (const name of ['◇ 流程编排', '▣ 页面编辑', '适应画布'])
@@ -219,8 +250,13 @@ try {
     (await groups()).groups.map((group) => group.label),
     expected['开始'],
   );
-  for (const name of ['撤销', '重做', '＋ 添加文字', '＋ 添加图片', '导入素材', '预览当前页'])
+  for (const name of ['撤销', '重做', '＋ 添加文字', '＋ 添加图片', '导入素材'])
     assert.ok((await buttonNames('开始')).includes(name), '页面开始 keeps ' + name);
+  assert.equal(
+    (await buttonNames('开始')).includes('预览当前页'),
+    false,
+    '页面开始 has no duplicate preview',
+  );
 
   await page.getByRole('tab', { name: '转场', exact: true }).click();
   const transitionSelect = page.locator('.ribbon-group[aria-label="页面转场"] select');
@@ -298,14 +334,23 @@ try {
   );
   await page.screenshot({ path: resolve(evidence, 'editor-ribbon.png') });
 
-  // 9. Player keeps the same title strip inside the .app wrapper.
-  await page.getByRole('button', { name: '▶ 从头预览', exact: true }).click();
+  // 9. Player keeps the same project/dirty title strip inside the .app wrapper.
+  assert.equal(
+    (await page.evaluate(async () => (await window.studio.invoke('state')).value)).dirty,
+    true,
+  );
+  await page.getByRole('button', { name: '从头预览', exact: true }).click();
   const shell = page.locator('.app.player-shell');
   await shell.waitFor();
   assert.equal(
     await page.locator('.app.player-shell > .window-titlebar .window-title').innerText(),
-    TITLE,
+    projectTitle(name),
   );
+  assert.equal(
+    await page.locator('.app.player-shell > .window-titlebar .save-status').innerText(),
+    '● 未保存',
+  );
+  assert.equal(await page.evaluate(() => document.title), dirtyTitle(name));
   const playerLayout = await page.evaluate(() => {
     const bar = document.querySelector('.app.player-shell .window-titlebar');
     const player = document.querySelector('.app.player-shell .player');
@@ -338,8 +383,11 @@ try {
   await welcome.page.locator('.welcome').waitFor();
   assert.equal(
     await welcome.page.locator('.app > .window-titlebar .window-title').innerText(),
-    TITLE,
+    WELCOME_TITLE,
   );
+  assert.equal(await welcome.page.locator('.app > .window-titlebar .save-status').count(), 0);
+  assert.equal(await welcome.page.evaluate(() => document.title), WELCOME_TITLE);
+  assert.equal(await welcome.page.locator('.topbar').count(), 0);
   assert.ok(
     (await welcome.page.getByText('把想象，连成故事。', { exact: true }).count()) === 1,
     'welcome screen still renders',

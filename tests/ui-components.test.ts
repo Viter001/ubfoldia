@@ -16,14 +16,18 @@ function sample() {
 
 const noop = () => {};
 
-test('the ribbon keeps tab ids, group labels and the original button names', () => {
-  const { project } = sample();
-  const html = renderToStaticMarkup(
+function ribbon(
+  group: Parameters<typeof CommandRibbon>[0]['group'],
+  project = sample().project,
+  page = null,
+  mode: 'flow' | 'page' = 'flow',
+) {
+  return renderToStaticMarkup(
     React.createElement(CommandRibbon, {
-      group: '开始',
+      group,
       onGroup: noop,
-      mode: 'flow',
-      page: null,
+      mode,
+      page,
       layer: null,
       project,
       canUndo: false,
@@ -44,13 +48,86 @@ test('the ribbon keeps tab ids, group labels and the original button names', () 
       onFit: noop,
     }),
   );
-  assert.match(html, /id="command-tab-开始"/);
-  assert.match(html, /id="command-ribbon"/);
-  assert.match(html, /aria-label="开始命令"/);
-  assert.match(html, /role="group" aria-label="编辑历史"/);
-  for (const name of ['撤销', '重做', '＋ 新增页面', '导入素材', '预览当前页'])
-    assert.ok(html.includes(name), name);
-  assert.match(html, /流程工作区/);
+}
+
+test('the workspace toolbar keeps the tablist pure and preview beside the workspace switch', () => {
+  const html = ribbon('开始');
+  assert.doesNotMatch(html, /class="topbar"/);
+  assert.match(html, /<div class="workspace-toolbar">/);
+
+  const nav =
+    html.match(
+      /<nav class="command-tabs" role="tablist" aria-label="命令分组">([\s\S]*?)<\/nav>/,
+    )?.[1] ?? '';
+  assert.equal(
+    (nav.match(/<button/g) ?? []).length,
+    6,
+    'only the six tab buttons live in the tablist',
+  );
+  assert.doesNotMatch(nav, /workspace-context|workspace-switch|preview-control/);
+
+  assert.match(html, /<\/nav><div class="workspace-context">/);
+  assert.match(
+    html,
+    /<div class="workspace-actions"><div class="workspace-switch" role="group" aria-label="工作区切换">/,
+  );
+  assert.match(html, /<div class="preview-control" role="group" aria-label="预览">/);
+  assert.match(html, /class="preview-primary" aria-label="从头预览">▶ 预览<\/button>/);
+  assert.match(html, /class="preview-toggle" aria-label="预览选项"/);
+  assert.match(html, /aria-label="预览选项" aria-haspopup="menu" aria-expanded="false"/);
+  assert.equal((html.match(/class="preview-primary"/g) ?? []).length, 1);
+});
+
+test('the ribbon keeps tab ids, group labels and the original file controls', () => {
+  const start = ribbon('开始');
+  assert.match(start, /id="command-tab-开始"/);
+  assert.match(start, /id="command-ribbon"/);
+  assert.match(start, /aria-label="开始命令"/);
+  assert.match(start, /role="group" aria-label="编辑历史"/);
+  for (const name of ['撤销', '重做', '＋ 新增页面', '导入素材'])
+    assert.ok(start.includes(name), name);
+  assert.equal(start.includes('预览当前页'), false, '开始 has no duplicate preview group');
+  assert.match(start, /流程工作区/);
+
+  const file = ribbon('文件');
+  for (const name of ['新建', '打开', '保存']) assert.ok(file.includes(name), name);
+});
+
+test('preview groups are gone from 开始/转场/动画 while their edit controls remain', () => {
+  const expected = {
+    文件: ['工程'],
+    开始: ['编辑历史', '页面', '素材'],
+    插入: ['内容', '素材', '页面'],
+    转场: ['页面转场', '计时', '换页方式'],
+    动画: ['对象动画', '计时', '触发与排序'],
+    视图: ['工作区', '画布'],
+  } as const;
+  for (const [group, labels] of Object.entries(expected)) {
+    const html = ribbon(group as keyof typeof expected);
+    for (const label of labels) {
+      assert.match(
+        html,
+        new RegExp('class="ribbon-group" role="group" aria-label="' + label + '"'),
+      );
+    }
+    if (group !== '开始' && group !== '插入') {
+      assert.equal(
+        html.includes('<div class="ribbon-group-title">预览</div>'),
+        false,
+        group + ' has no preview group',
+      );
+    }
+  }
+  assert.equal(ribbon('转场').includes('预览当前页'), false);
+  assert.equal(ribbon('动画').includes('预览当前页'), false);
+});
+
+test('the primary preview button disables without a start page while the toggle stays available', () => {
+  const { project } = sample();
+  const html = ribbon('开始', { ...project, startPageId: null });
+  assert.match(html, /class="preview-primary" aria-label="从头预览" disabled=""/);
+  assert.match(html, /class="preview-toggle" aria-label="预览选项"/);
+  assert.doesNotMatch(html, /class="preview-toggle" aria-label="预览选项"[^>]*disabled/);
 });
 
 test('page workspace and inspector keep their stable classes and controls', () => {

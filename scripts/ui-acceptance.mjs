@@ -125,6 +125,7 @@ try {
     (await state()).project.pages.map((p) => p.exits.length),
     [1, 2, 1, 1, 0],
   );
+  await page.getByRole('tab', { name: '文件', exact: true }).click();
   await page.getByRole('button', { name: '保存', exact: true }).click();
   await page.waitForFunction(() => window.studio.invoke('state').then((r) => !r.value.dirty));
   const disk = JSON.parse(await readFile(join(projectDir, 'project.json'), 'utf8'));
@@ -137,6 +138,7 @@ try {
     },
     join(moved, 'project.json'),
   );
+  await page.getByRole('tab', { name: '文件', exact: true }).click();
   await page.getByRole('button', { name: '打开', exact: true }).click();
   assert.equal((await state()).missing.length, 0);
   assert.equal((await state()).canUndo, false);

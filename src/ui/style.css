@@ -125,60 +125,11 @@ small {
   flex-direction: column;
   overflow: hidden;
 }
-.topbar {
-  height: 56px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 0 20px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-}
-.brand {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  min-width: 135px;
-}
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 2px;
-  background: var(--accent);
-  color: var(--panel);
-  font-size: 20px;
-  font-family: inherit;
-}
-.brand strong {
-  font-size: 17px;
-  letter-spacing: 2px;
-}
-.brand small {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 2px;
-  margin-top: 2px;
-}
-.project-title {
-  font-size: 14px;
-  font-weight: 600;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .save-status {
   font-size: 11px;
   font-weight: 400;
   color: var(--muted);
   margin-left: 14px;
-}
-.top-actions {
-  display: flex;
-  gap: 7px;
 }
 .workspace-bar {
   height: 48px;
@@ -800,16 +751,6 @@ small {
   }
 }
 @media (max-width: 1150px) {
-  .topbar {
-    padding: 0 16px;
-    gap: 12px;
-  }
-  .brand {
-    min-width: 135px;
-  }
-  .brand small {
-    display: none;
-  }
   .inspector {
     width: 254px;
     padding: 15px;
@@ -819,12 +760,6 @@ small {
   }
   .editor-canvas {
     padding: 55px 24px 60px;
-  }
-  .top-actions {
-    gap: 4px;
-  }
-  .top-actions button {
-    padding: 7px 9px;
   }
   .workspace-bar {
     padding: 0 16px;
@@ -875,7 +810,6 @@ small {
 
 /* Shared editor chrome; artwork styles remain owned by the project model. */
 button.primary,
-.brand-mark,
 .choices button {
   color: #0d0f0e;
 }
@@ -886,7 +820,6 @@ button:focus-visible {
 button:disabled {
   opacity: 0.5;
 }
-.brand small,
 .card-number,
 .eyebrow,
 .save-status,
@@ -898,14 +831,9 @@ button:disabled {
 .eyebrow {
   font-family: Consolas, 'Microsoft YaHei UI', monospace;
 }
-.brand-mark {
-  border-radius: 0;
-  box-shadow: none;
-}
 .save-status {
   color: var(--warning);
 }
-.topbar,
 .workspace-bar,
 .statusbar {
   background: var(--panel);
@@ -1066,12 +994,6 @@ button:disabled {
   .library {
     width: 175px;
   }
-  .brand {
-    min-width: 105px;
-  }
-  .brand small {
-    display: none;
-  }
   .editor-canvas {
     padding: 48px 16px;
   }
@@ -1130,12 +1052,6 @@ button:disabled {
 @media (max-width: 850px) {
   .workspace-context {
     display: none;
-  }
-  .top-actions button {
-    padding: 6px;
-  }
-  .project-title {
-    min-width: 0;
   }
   .command-tabs {
     gap: 2px;
@@ -1317,6 +1233,102 @@ button:disabled {
   }
   .ribbon-group {
     padding-inline: 12px;
+  }
+}
+
+/* Project commands and preview remain separate from the scrolling tab strip. */
+.workspace-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: relative;
+  z-index: 20;
+}
+.workspace-toolbar .command-tabs {
+  min-width: 0;
+  padding: 5px 0;
+  border: 0;
+  flex: 0 1 auto;
+}
+.workspace-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.workspace-actions .workspace-switch {
+  margin-left: 0;
+  padding-left: 12px;
+}
+.preview-control {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+.preview-control > button {
+  color: var(--accent);
+  background: #202710;
+  border-color: #52612c;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+.preview-control > .preview-primary {
+  border-radius: 3px 0 0 3px;
+}
+.preview-control > .preview-toggle {
+  border-radius: 0 3px 3px 0;
+  margin-left: -1px;
+  padding-inline: 7px;
+}
+.preview-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  min-width: 180px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: 0 8px 24px #0008;
+  z-index: 30;
+}
+.preview-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-color: transparent;
+  background: transparent;
+}
+.preview-menu button:not(:disabled):hover,
+.preview-menu button:focus-visible {
+  background: #293322;
+  color: var(--accent);
+}
+.window-titlebar .save-status {
+  flex-shrink: 0;
+  margin-left: 10px;
+  font-size: 11px;
+}
+@media (max-width: 850px) {
+  .workspace-toolbar {
+    padding-inline: 8px;
+    gap: 5px;
+  }
+  .workspace-actions {
+    gap: 6px;
+  }
+  .workspace-actions .workspace-switch {
+    padding-left: 6px;
+    gap: 3px;
+  }
+  .workspace-switch button {
+    padding-inline: 7px;
   }
 }
 
