@@ -207,6 +207,31 @@ else {
       win.webContents.on('render-process-gone', rendererGone);
       win.webContents.on('destroyed', rendererGone);
 
+      ipcMain.on('titlebar-theme', (event, theme: unknown) => {
+        if (!trusted(event) || !theme || typeof theme !== 'object') return;
+        const candidate = theme as Record<string, unknown>;
+        const backgroundColor = candidate.backgroundColor;
+        const overlayColor = candidate.overlayColor;
+        const symbolColor = candidate.symbolColor;
+        const colorPattern = /^#[0-9a-f]{6}$/i;
+        if (
+          typeof backgroundColor !== 'string' ||
+          typeof overlayColor !== 'string' ||
+          typeof symbolColor !== 'string' ||
+          !colorPattern.test(backgroundColor) ||
+          !colorPattern.test(overlayColor) ||
+          !colorPattern.test(symbolColor)
+        )
+          return;
+        if (process.platform !== 'win32' || !win || win.isDestroyed()) return;
+        try {
+          win.setBackgroundColor(backgroundColor);
+          win.setTitleBarOverlay({ color: overlayColor, symbolColor, height: 32 });
+        } catch {
+          // Theme switching must never take down the window.
+        }
+      });
+
       registerStudioIpc({ ipcMain, trusted, queue, flusher, leave, router });
 
       let closing = false;

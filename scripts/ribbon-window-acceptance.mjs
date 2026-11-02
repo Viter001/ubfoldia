@@ -93,6 +93,7 @@ try {
     'onLeaveResult',
     'platform',
     'respondLeave',
+    'setTitleBarTheme',
     'subscribe',
   ]);
 

@@ -422,10 +422,10 @@ export function FlowWorkspace({
           position="bottom-right"
           pannable
           zoomable
-          nodeColor={(node) => (node.selected ? '#dfff00' : '#9cc3a6')}
-          nodeStrokeColor="#d7e6d2"
+          nodeColor={(node) => (node.selected ? 'var(--accent)' : 'var(--minimap-node)')}
+          nodeStrokeColor="var(--minimap-node-stroke)"
           nodeBorderRadius={2}
-          maskColor="rgba(2, 4, 3, 0.88)"
+          maskColor="var(--minimap-mask)"
         />
       </ReactFlow>
       <label className="flow-overlap-toggle">

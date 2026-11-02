@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import type { Command, Layer, Page, Project } from '../core/project';
 import { COMMAND_GROUPS, type CommandGroup, type WorkspaceMode } from './interaction';
 import { PreviewMenu } from './PreviewMenu';
+import { ThemeMenu } from './ThemeMenu';
+import type { ThemeId } from './themes';
 import { RibbonGroup } from './RibbonControls';
 import { DurationField, LayerEffectSelect, TransitionSelect } from './EffectControls';
 
@@ -30,6 +32,8 @@ export type CommandRibbonProps = {
   onFit: () => void;
   /** Initial visual state; production keeps the local state and starts expanded. */
   defaultCollapsed?: boolean;
+  theme?: ThemeId;
+  onTheme?: (theme: ThemeId) => void;
 };
 
 /**
@@ -60,6 +64,8 @@ export function CommandRibbon({
   onShowPage,
   onFit,
   defaultCollapsed = false,
+  theme,
+  onTheme,
 }: CommandRibbonProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -162,6 +168,7 @@ export function CommandRibbon({
             currentPageId={page?.id ?? null}
             onPreview={onPreview}
           />
+          {theme && onTheme && <ThemeMenu theme={theme} onTheme={onTheme} />}
           <button
             ref={toggleRef}
             type="button"

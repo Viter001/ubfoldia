@@ -83,6 +83,12 @@ export type StudioResult<A extends StudioAction> = StudioSuccess<A> | StudioFail
 export type StudioBridge = {
   /** process.platform of the desktop host; read-only. */
   platform: string;
+  /** Update the native Windows caption strip when the editor theme changes. */
+  setTitleBarTheme: (theme: {
+    backgroundColor: string;
+    overlayColor: string;
+    symbolColor: string;
+  }) => void;
   invoke: {
     <A extends StudioAction>(
       action: A,

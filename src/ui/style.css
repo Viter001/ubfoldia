@@ -1,15 +1,276 @@
 :root {
   color-scheme: dark;
-  --bg: #0d0f0e;
-  --panel: #0f1211;
-  --raised: #1e2a1e;
-  --text: #c5d0c0;
-  --muted: #a0afa4;
-  --border: #303d34;
-  --accent: #dfff00;
-  --signal: #4ec97a;
-  --warning: #e5be78;
-  --danger: #f0a68e;
+  --bg: #0b0d0e;
+  --panel: #111416;
+  --raised: #1b2224;
+  --text: #efe7d1;
+  --muted: #a39b89;
+  --border: #343c3e;
+  --border-strong: #5c6b68;
+  --accent: #ffb000;
+  --accent-hover: #ffc247;
+  --primary-text: #0b0d0e;
+  --signal: #55d6be;
+  --warning: #ffd166;
+  --danger: #ff7b72;
+  --danger-bg: #2c1b17;
+  --danger-border: #6a4236;
+  --card-bg: #151a1b;
+  --card-heading: #1d2425;
+  --card-actions: #111516;
+  --card-border: #4a5b5d;
+  --card-divider: #344344;
+  --card-action-bg: #253033;
+  --card-action-text: #efe7d1;
+  --card-number: #b5c8b7;
+  --card-secondary: #b8cbb9;
+  --column-bg: #10161266;
+  --column-alt: #0e131166;
+  --column-border: #364437;
+  --hint-bg: #0b0d0ee8;
+  --legend-bg: #0b0d0ee8;
+  --placeholder-bg: #131a15;
+  --placeholder-border: #425347;
+  --menu-hover: #293322;
+  --accent-soft: #202710;
+  --accent-border: #52612c;
+  --scrollbar: #526455;
+  --minimap-bg: #07090a;
+  --minimap-node: #d0b36d;
+  --minimap-node-stroke: #efe7d1;
+  --minimap-mask: #020403e0;
+  --minimap-border: #708a77;
+  --overlap-bg: #0b100ddd;
+  --overlap-border: #4f6556;
+  --overlap-text: #d4dfd1;
+  --snap-guide: #ffb000;
+  --modal-mask: #030805b8;
+  --modal-border: #607a68;
+  --banner-info-bg: #252713;
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 13px;
+  font-synthesis: none;
+}
+
+:root[data-theme='claude-paper'] {
+  color-scheme: light;
+  --bg: #f3efe6;
+  --panel: #fbf7ef;
+  --raised: #e7dfd2;
+  --text: #2f2b26;
+  --muted: #6f6a60;
+  --border: #d6cbbb;
+  --border-strong: #a99a83;
+  --accent: #b65f43;
+  --accent-hover: #c87355;
+  --primary-text: #fffaf2;
+  --signal: #3f7d68;
+  --warning: #b7791f;
+  --danger: #a33f35;
+  --danger-bg: #f1ded7;
+  --danger-border: #c78d7e;
+  --card-bg: #fffaf2;
+  --card-heading: #f1e8da;
+  --card-actions: #f7f0e5;
+  --card-border: #cdbfa9;
+  --card-divider: #d8cdbc;
+  --card-action-bg: #eadfce;
+  --card-action-text: #2f2b26;
+  --card-number: #776b5c;
+  --card-secondary: #5f6a60;
+  --column-bg: #6d5f4a08;
+  --column-alt: #3f7d6808;
+  --column-border: #cdbfa9;
+  --hint-bg: #fbf7efee;
+  --legend-bg: #fbf7efee;
+  --placeholder-bg: #f4ece0;
+  --placeholder-border: #c9b8a4;
+  --menu-hover: #f1e6d8;
+  --accent-soft: #f1e3d9;
+  --accent-border: #c99f89;
+  --scrollbar: #b8a88f;
+  --minimap-bg: #fffaf2;
+  --minimap-node: #3f7d68;
+  --minimap-node-stroke: #2f2b26;
+  --minimap-mask: #2f2b2644;
+  --minimap-border: #cdbfa9;
+  --overlap-bg: #fffaf2ee;
+  --overlap-border: #cdbfa9;
+  --overlap-text: #2f2b26;
+  --snap-guide: #b65f43;
+  --modal-mask: #2f2b2633;
+  --modal-border: #b8a88f;
+  --banner-info-bg: #efe6d4;
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 13px;
+  font-synthesis: none;
+}
+
+:root[data-theme='claude-night'] {
+  color-scheme: dark;
+  --bg: #1b1916;
+  --panel: #23201b;
+  --raised: #302b24;
+  --text: #f1e9db;
+  --muted: #b8ab96;
+  --border: #4a4338;
+  --border-strong: #7a6b58;
+  --accent: #d98b6a;
+  --accent-hover: #e9a17f;
+  --primary-text: #1b1916;
+  --signal: #8fc9a9;
+  --warning: #e8c07a;
+  --danger: #ef9b86;
+  --danger-bg: #3a1f1a;
+  --danger-border: #7a443a;
+  --card-bg: #2a251f;
+  --card-heading: #332c24;
+  --card-actions: #211d18;
+  --card-border: #5b5142;
+  --card-divider: #4a4035;
+  --card-action-bg: #3b3329;
+  --card-action-text: #f1e9db;
+  --card-number: #cbbba4;
+  --card-secondary: #c3b5a2;
+  --column-bg: #2a251f33;
+  --column-alt: #1b191633;
+  --column-border: #4a4338;
+  --hint-bg: #1b1916ee;
+  --legend-bg: #1b1916ee;
+  --placeholder-bg: #2a251f;
+  --placeholder-border: #5b5142;
+  --menu-hover: #3a3128;
+  --accent-soft: #3a2b24;
+  --accent-border: #7a5c4c;
+  --scrollbar: #6e5d4d;
+  --minimap-bg: #15130f;
+  --minimap-node: #c79a7b;
+  --minimap-node-stroke: #f1e9db;
+  --minimap-mask: #000000aa;
+  --minimap-border: #76664f;
+  --overlap-bg: #1b1916ee;
+  --overlap-border: #6a5a4a;
+  --overlap-text: #f1e9db;
+  --snap-guide: #d98b6a;
+  --modal-mask: #00000088;
+  --modal-border: #76664f;
+  --banner-info-bg: #2a251f;
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 13px;
+  font-synthesis: none;
+}
+
+:root[data-theme='tui-ice'] {
+  color-scheme: dark;
+  --bg: #071014;
+  --panel: #0b171d;
+  --raised: #10232b;
+  --text: #d7edf2;
+  --muted: #84a6b0;
+  --border: #23414b;
+  --border-strong: #4b7480;
+  --accent: #63e6ff;
+  --accent-hover: #89edff;
+  --primary-text: #071014;
+  --signal: #78e0c4;
+  --warning: #ffd166;
+  --danger: #ff8a8a;
+  --danger-bg: #2c1b1f;
+  --danger-border: #7a3f48;
+  --card-bg: #0f1c22;
+  --card-heading: #142731;
+  --card-actions: #0a1418;
+  --card-border: #2d5360;
+  --card-divider: #22404a;
+  --card-action-bg: #1b3540;
+  --card-action-text: #d7edf2;
+  --card-number: #9fc1c9;
+  --card-secondary: #9fc1c9;
+  --column-bg: #0f1c2266;
+  --column-alt: #0a141866;
+  --column-border: #23414b;
+  --hint-bg: #071014ee;
+  --legend-bg: #071014ee;
+  --placeholder-bg: #10232b;
+  --placeholder-border: #2d5360;
+  --menu-hover: #18313a;
+  --accent-soft: #14313a;
+  --accent-border: #3f7483;
+  --scrollbar: #3f7483;
+  --minimap-bg: #061014;
+  --minimap-node: #63e6ff;
+  --minimap-node-stroke: #d7edf2;
+  --minimap-mask: #000000b8;
+  --minimap-border: #3f7483;
+  --overlap-bg: #071014ee;
+  --overlap-border: #3f7483;
+  --overlap-text: #d7edf2;
+  --snap-guide: #63e6ff;
+  --modal-mask: #00000088;
+  --modal-border: #3f7483;
+  --banner-info-bg: #10232b;
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 13px;
+  font-synthesis: none;
+}
+
+:root[data-theme='nord'] {
+  color-scheme: dark;
+  --bg: #2e3440;
+  --panel: #353c4a;
+  --raised: #434c5e;
+  --text: #eceff4;
+  --muted: #b6c0ce;
+  --border: #4c566a;
+  --border-strong: #7a879e;
+  --accent: #88c0d0;
+  --accent-hover: #9fd0de;
+  --primary-text: #2e3440;
+  --signal: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --danger-bg: #3b2429;
+  --danger-border: #7f4c54;
+  --card-bg: #3b4252;
+  --card-heading: #434c5e;
+  --card-actions: #343b48;
+  --card-border: #5e6b82;
+  --card-divider: #4c566a;
+  --card-action-bg: #4b586d;
+  --card-action-text: #eceff4;
+  --card-number: #c7d0dd;
+  --card-secondary: #c7d0dd;
+  --column-bg: #3b425233;
+  --column-alt: #2e344033;
+  --column-border: #4c566a;
+  --hint-bg: #2e3440ee;
+  --legend-bg: #2e3440ee;
+  --placeholder-bg: #3b4252;
+  --placeholder-border: #5e6b82;
+  --menu-hover: #4b586d;
+  --accent-soft: #384b56;
+  --accent-border: #5f8691;
+  --scrollbar: #6d7b93;
+  --minimap-bg: #242933;
+  --minimap-node: #88c0d0;
+  --minimap-node-stroke: #eceff4;
+  --minimap-mask: #141821cc;
+  --minimap-border: #6d7b93;
+  --overlap-bg: #2e3440ee;
+  --overlap-border: #6d7b93;
+  --overlap-text: #eceff4;
+  --snap-guide: #88c0d0;
+  --modal-mask: #141821aa;
+  --modal-border: #6d7b93;
+  --banner-info-bg: #3b4252;
   font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
   color: var(--text);
   background: var(--bg);
@@ -42,7 +303,7 @@ button {
 }
 button:hover {
   background: var(--raised);
-  border-color: #607a68;
+  border-color: var(--border-strong);
 }
 button:disabled {
   opacity: 0.45;
@@ -51,16 +312,16 @@ button:disabled {
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--panel);
+  color: var(--primary-text);
 }
 button.primary:hover {
-  background: #e8ff68;
+  background: var(--accent-hover);
 }
 button.danger,
 .text-danger {
   color: var(--danger);
-  background: #2c1b17;
-  border-color: #6a4236;
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
 }
 button.large {
   padding: 13px 22px;
@@ -273,9 +534,9 @@ small {
 }
 .page-card {
   width: 244px;
-  border: 1px solid #4d6353;
+  border: 1px solid var(--card-border);
   border-radius: 2px;
-  background: #18221b;
+  background: var(--card-bg);
   box-shadow: 0 2px 12px #0008;
   overflow: visible;
 }
@@ -285,8 +546,8 @@ small {
 }
 .card-heading {
   height: 40px;
-  border-bottom: 1px solid #35483a;
-  background: #1d2920;
+  border-bottom: 1px solid var(--card-divider);
+  background: var(--card-heading);
   display: flex;
   gap: 10px;
   align-items: center;
@@ -301,7 +562,7 @@ small {
 }
 .card-number {
   font-size: 11px;
-  color: #b5c8b7;
+  color: var(--card-number);
 }
 .start-tag {
   font-size: 10px;
@@ -326,16 +587,16 @@ small {
   align-items: center;
   justify-content: space-between;
   padding: 10px;
-  border-top: 1px solid #35483a;
-  background: #141d17;
+  border-top: 1px solid var(--card-divider);
+  background: var(--card-actions);
   font-size: 10px;
 }
 .card-actions button {
   font-size: 11px;
   padding: 6px 8px;
   border: 0;
-  background: #293a2c;
-  color: #e4ece2;
+  background: var(--card-action-bg);
+  color: var(--card-action-text);
 }
 .warning {
   color: var(--warning);
@@ -344,8 +605,8 @@ small {
   position: relative;
   font-size: 11px;
   padding: 10px 15px;
-  border-top: 1px solid #35483a;
-  color: #b8cbb9;
+  border-top: 1px solid var(--card-divider);
+  color: var(--card-secondary);
 }
 .react-flow__handle {
   width: 10px;
@@ -374,7 +635,7 @@ small {
   white-space: nowrap;
   font-size: 11px;
   color: var(--muted);
-  background: #0d0f0ee8;
+  background: var(--hint-bg);
   padding: 7px 12px;
   border-radius: 2px;
   pointer-events: none;
@@ -645,7 +906,7 @@ small {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: #030805b8;
+  background: var(--modal-mask);
   display: grid;
   place-items: center;
   z-index: 100;
@@ -666,7 +927,7 @@ small {
   align-items: center;
   gap: 15px;
   padding: 8px 24px;
-  background: #252713;
+  background: var(--banner-info-bg);
   color: var(--signal);
   font-size: 12px;
   max-height: 100px;
@@ -674,7 +935,7 @@ small {
   flex-shrink: 0;
 }
 .banner.error {
-  background: #2c1b17;
+  background: var(--danger-bg);
   color: var(--danger);
 }
 .banner button {
@@ -733,7 +994,7 @@ small {
   padding: 12px 22px;
 }
 .notice {
-  background: #252713;
+  background: var(--banner-info-bg);
   color: var(--warning);
   padding: 10px;
   text-align: center;
@@ -743,7 +1004,7 @@ small {
   bottom: 15px;
   left: 20px;
   padding: 12px;
-  background: #2c1b17;
+  background: var(--danger-bg);
   color: var(--danger);
   z-index: 10;
 }
@@ -784,8 +1045,8 @@ small {
   padding: 6px;
   text-align: center;
   overflow: hidden;
-  background: repeating-linear-gradient(45deg, #2b211b, #2b211b 9px, #35291f 9px, #35291f 18px);
-  border: 1px dashed #6a4236;
+  background: var(--danger-bg);
+  border: 1px dashed var(--danger-border);
   color: var(--danger);
 }
 .scene-missing span {
@@ -804,8 +1065,8 @@ small {
   font-size: 10px;
   padding: 6px 7px;
   color: var(--danger);
-  background: #2c1b17;
-  border-color: #6a4236;
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
 }
 .form-error {
   color: var(--danger);
@@ -816,7 +1077,7 @@ small {
 /* Shared editor chrome; artwork styles remain owned by the project model. */
 button.primary,
 .choices button {
-  color: #0d0f0e;
+  color: var(--primary-text);
 }
 button:focus-visible {
   outline: 2px solid var(--accent);
@@ -916,7 +1177,7 @@ button:disabled {
   border-radius: 0;
 }
 .react-flow {
-  --xy-background-pattern-dots-color-default: #354139;
+  --xy-background-pattern-dots-color-default: var(--border);
   --xy-controls-button-background-color-default: var(--panel);
   --xy-controls-button-background-color-hover-default: var(--raised);
   --xy-controls-button-color-default: var(--text);
@@ -950,7 +1211,7 @@ button:disabled {
   max-width: calc(100vw - 36px);
   max-height: calc(100vh - 36px);
   overflow: auto;
-  border: 1px solid #607a68;
+  border: 1px solid var(--modal-border);
   border-radius: 2px;
   box-shadow: 0 12px 48px #0006;
 }
@@ -1036,7 +1297,7 @@ button:disabled {
   place-items: center;
   border: 1px solid var(--warning);
   color: var(--warning);
-  background: #252713;
+  background: var(--banner-info-bg);
   font-size: 22px;
 }
 .leave-dialog p {
@@ -1082,7 +1343,7 @@ button:disabled {
   align-items: center;
   padding: 7px 11px;
   border: 1px solid var(--border);
-  background: #0d0f0ee8;
+  background: var(--hint-bg);
   color: var(--muted);
   font-size: 11px;
   pointer-events: none;
@@ -1098,7 +1359,7 @@ button:disabled {
   height: 2px;
 }
 .react-flow__edge.edge-selected .react-flow__edge-path {
-  filter: drop-shadow(0 0 3px #c5d0c0);
+  filter: drop-shadow(0 0 3px var(--text));
 }
 
 /* Windows title bar: native caption buttons occupy the overlay's excluded area. */
@@ -1157,7 +1418,7 @@ button:disabled {
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #526455 var(--panel);
+  scrollbar-color: var(--scrollbar) var(--panel);
   padding: 6px 10px;
 }
 .ribbon-group {
@@ -1207,7 +1468,7 @@ button:disabled {
 .ribbon-group button[aria-pressed='true'] {
   color: var(--accent);
   border-color: var(--accent);
-  background: #202710;
+  background: var(--accent-soft);
 }
 .ribbon-placeholder {
   display: flex;
@@ -1216,10 +1477,10 @@ button:disabled {
   gap: 3px;
   padding: 8px 12px;
   min-height: 48px;
-  border: 1px dashed #425347;
+  border: 1px dashed var(--placeholder-border);
   color: var(--muted);
   font-size: 12px;
-  background: #131a15;
+  background: var(--placeholder-bg);
   cursor: default;
 }
 .ribbon-placeholder small {
@@ -1285,8 +1546,8 @@ button:disabled {
 }
 .preview-control > button {
   color: var(--accent);
-  background: #202710;
-  border-color: #52612c;
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
   padding: 6px 10px;
   white-space: nowrap;
 }
@@ -1319,7 +1580,7 @@ button:disabled {
 }
 .preview-menu button:not(:disabled):hover,
 .preview-menu button:focus-visible {
-  background: #293322;
+  background: var(--menu-hover);
   color: var(--accent);
 }
 .window-titlebar .save-status {
@@ -1466,7 +1727,7 @@ button:disabled {
 }
 .ribbon-toggle[aria-expanded='false'] {
   color: var(--accent);
-  border-color: #66783a;
+  border-color: var(--accent-border);
 }
 .flow-columns {
   pointer-events: none;
@@ -1474,20 +1735,20 @@ button:disabled {
 .flow-column {
   position: absolute;
   pointer-events: none;
-  border-left: 1px solid #364437;
-  background: #10161266;
+  border-left: 1px solid var(--column-border);
+  background: var(--column-bg);
 }
 .flow-column:nth-child(even) {
-  background: #0e131166;
+  background: var(--column-alt);
 }
 .flow-column-label {
   position: absolute;
   left: 12px;
   top: 8px;
   padding: 4px 9px;
-  color: #a5b79e;
-  background: #0d0f0ee8;
-  border: 1px solid #354332;
+  color: var(--column-label-text);
+  background: var(--hint-bg);
+  border: 1px solid var(--column-label-border);
   font:
     12px/1.4 'Segoe UI',
     'Microsoft YaHei',
@@ -1497,10 +1758,10 @@ button:disabled {
 .page-level {
   display: block;
   padding: 5px 13px;
-  color: #c0d1c2;
+  color: var(--card-number);
   font-size: 10px;
   letter-spacing: 0.08em;
-  border-top: 1px solid #35483a;
+  border-top: 1px solid var(--card-divider);
 }
 .flow-legend {
   flex-wrap: wrap;
@@ -1533,12 +1794,12 @@ button:disabled {
 .flow-minimap {
   width: 190px;
   height: 132px;
-  border: 1px solid #708a77;
-  background: #080b09;
+  border: 1px solid var(--minimap-border);
+  background: var(--minimap-bg);
   box-shadow: 0 8px 24px #000c;
 }
 .flow-minimap .react-flow__minimap-mask {
-  fill: #020403e0;
+  fill: var(--minimap-mask);
 }
 .flow-minimap .react-flow__minimap-svg {
   display: block;
@@ -1552,8 +1813,8 @@ button:disabled {
 
 .flow-snap-guide {
   height: 0;
-  border-top: 1px dashed #dfff00;
-  box-shadow: 0 0 0 1px #dfff0022;
+  border-top: 1px dashed var(--snap-guide);
+  box-shadow: 0 0 0 1px var(--accent-soft);
   pointer-events: none;
 }
 .flow-overlap-toggle {
@@ -1565,11 +1826,120 @@ button:disabled {
   align-items: center;
   gap: 7px;
   padding: 6px 9px;
-  color: #d4dfd1;
-  background: #0b100ddd;
-  border: 1px solid #4f6556;
+  color: var(--overlap-text);
+  background: var(--overlap-bg);
+  border: 1px solid var(--overlap-border);
   font-size: 11px;
 }
 .flow-overlap-toggle input {
   margin: 0;
+}
+
+/* Settings menu and theme picker */
+.settings-control {
+  position: relative;
+  display: flex;
+}
+.settings-toggle {
+  padding: 6px 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.settings-toggle[aria-expanded='true'] {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+.settings-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 330px;
+  max-width: calc(100vw - 30px);
+  padding: 16px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  box-shadow: 0 12px 32px #0009;
+  z-index: 40;
+}
+.settings-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.settings-heading strong {
+  font-size: 15px;
+}
+.settings-menu > .help {
+  margin: 0 0 12px;
+}
+.theme-options {
+  display: grid;
+  gap: 5px;
+}
+.theme-option {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px;
+  border-color: transparent;
+  background: transparent;
+  text-align: left;
+}
+.theme-option:hover {
+  background: var(--menu-hover);
+}
+.theme-option.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.theme-swatches {
+  display: flex;
+  height: 28px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+}
+.theme-swatches i {
+  flex: 1;
+}
+.theme-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.theme-copy strong {
+  font-size: 12px;
+}
+.theme-copy small {
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: normal;
+}
+.theme-mode {
+  color: var(--muted);
+  font-size: 10px;
+}
+@media (max-width: 1000px) {
+  .settings-toggle {
+    padding-inline: 7px;
+  }
+}
+
+.react-flow__controls {
+  background: var(--panel);
+}
+.react-flow__controls button {
+  background: var(--panel);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.react-flow__controls button:hover {
+  background: var(--raised);
+}
+.react-flow__controls button svg {
+  fill: currentColor;
 }

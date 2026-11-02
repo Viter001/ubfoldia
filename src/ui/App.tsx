@@ -17,11 +17,13 @@ import { useAudition } from './useAudition';
 import { useFlowView } from './flow-view';
 import { globalKeyIntent } from './leave';
 import type { NewProjectInput } from './api';
+import { applyTheme, loadTheme, themeById, type ThemeId } from './themes';
 
 export function App() {
   const { state, setState, error, message, setError, setMessage, clearBanner, invoke } =
     useStudioSession();
   const [interaction, dispatch] = useReducer(interactionReducer, initialInteraction);
+  const [theme, setTheme] = useState<ThemeId>(() => loadTheme());
   const {
     mode,
     pageId,
@@ -50,6 +52,16 @@ export function App() {
   const flowView = useFlowView(project, viewportEpoch, mode === 'flow' && !preview);
   const audition = useAudition(project, setError);
   const { leave, answer } = useLeaveDialog(setError);
+
+  useEffect(() => {
+    applyTheme(theme);
+    const native = themeById(theme).native;
+    window.studio?.setTitleBarTheme({
+      backgroundColor: native.background,
+      overlayColor: native.overlay,
+      symbolColor: native.symbol,
+    });
+  }, [theme]);
 
   useEffect(() => {
     dispatch({ type: 'sync', project });
@@ -259,6 +271,8 @@ export function App() {
         <>
           <CommandRibbon
             group={commandGroup}
+            theme={theme}
+            onTheme={(next) => setTheme(next)}
             onGroup={(group) => dispatch({ type: 'command-group', group })}
             mode={mode}
             page={page ?? null}
