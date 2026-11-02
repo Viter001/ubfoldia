@@ -55,6 +55,19 @@ try {
   page.setDefaultTimeout(15000);
   await page.getByText('流程工作区', { exact: true }).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'tui-lime');
+
+  // The first theme build auto-wrote amber as its default. A one-time
+  // migration must move that legacy value to the newly confirmed acid yellow.
+  await page.evaluate(() => {
+    localStorage.setItem('ubfoldia.theme', 'tui-amber');
+    localStorage.removeItem('ubfoldia.theme.version');
+  });
+  await page.reload();
+  await page.getByText('流程工作区', { exact: true }).waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'tui-lime');
+  assert.equal(await page.evaluate(() => localStorage.getItem('ubfoldia.theme')), 'tui-lime');
+  assert.equal(await page.evaluate(() => localStorage.getItem('ubfoldia.theme.version')), '2');
+
   const settings = page.getByRole('button', { name: '设置', exact: true });
   await settings.click();
   const dialog = page.getByRole('dialog', { name: '设置' });

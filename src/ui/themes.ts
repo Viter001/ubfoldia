@@ -86,6 +86,8 @@ export const THEMES: readonly ThemeOption[] = [
 
 export const DEFAULT_THEME: ThemeId = 'tui-lime';
 export const THEME_STORAGE_KEY = 'ubfoldia.theme';
+export const THEME_STORAGE_VERSION_KEY = 'ubfoldia.theme.version';
+export const THEME_STORAGE_VERSION = '2';
 
 export function isThemeId(value: unknown): value is ThemeId {
   return THEMES.some((theme) => theme.id === value);
@@ -105,7 +107,12 @@ export function themeById(id: ThemeId): ThemeOption {
 export function loadTheme(storage: ThemeStorage | null = defaultStorage()): ThemeId {
   try {
     const stored = storage?.getItem(THEME_STORAGE_KEY);
-    return isThemeId(stored) ? stored : DEFAULT_THEME;
+    if (!isThemeId(stored)) return DEFAULT_THEME;
+    if (storage?.getItem(THEME_STORAGE_VERSION_KEY) === THEME_STORAGE_VERSION) return stored;
+    // The first theme release wrote the old amber default into storage on
+    // startup. Migrate that value once; themes explicitly chosen from the
+    // settings window still survive this fallback.
+    return stored === 'tui-amber' ? DEFAULT_THEME : stored;
   } catch {
     return DEFAULT_THEME;
   }
@@ -121,6 +128,7 @@ export function applyTheme(
   if (root) root.dataset.theme = theme;
   try {
     storage?.setItem(THEME_STORAGE_KEY, theme);
+    storage?.setItem(THEME_STORAGE_VERSION_KEY, THEME_STORAGE_VERSION);
   } catch {
     // A blocked localStorage must not break theme switching in this session.
   }

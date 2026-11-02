@@ -4,6 +4,8 @@ import {
   DEFAULT_THEME,
   THEMES,
   THEME_STORAGE_KEY,
+  THEME_STORAGE_VERSION,
+  THEME_STORAGE_VERSION_KEY,
   applyTheme,
   isThemeId,
   loadTheme,
@@ -31,10 +33,26 @@ test('loadTheme falls back safely and applyTheme persists the selection', () => 
   assert.equal(loadTheme(storage()), DEFAULT_THEME);
   assert.equal(loadTheme(storage({ [THEME_STORAGE_KEY]: 'nord' })), 'nord');
   assert.equal(loadTheme(storage({ [THEME_STORAGE_KEY]: 'tui-lime' })), 'tui-lime');
+  assert.equal(
+    loadTheme(storage({ [THEME_STORAGE_KEY]: 'tui-amber' })),
+    DEFAULT_THEME,
+    'old auto-written amber default migrates to acid yellow',
+  );
+  assert.equal(
+    loadTheme(
+      storage({
+        [THEME_STORAGE_KEY]: 'tui-amber',
+        [THEME_STORAGE_VERSION_KEY]: THEME_STORAGE_VERSION,
+      }),
+    ),
+    'tui-amber',
+    'a theme chosen after the version marker is preserved',
+  );
   assert.equal(loadTheme(storage({ [THEME_STORAGE_KEY]: 'nope' })), DEFAULT_THEME);
   const memory = storage();
   const root = { dataset: {} as Record<string, string | undefined> };
   assert.equal(applyTheme('claude-paper', root, memory), 'claude-paper');
   assert.equal(root.dataset.theme, 'claude-paper');
   assert.equal(memory.getItem(THEME_STORAGE_KEY), 'claude-paper');
+  assert.equal(memory.getItem(THEME_STORAGE_VERSION_KEY), THEME_STORAGE_VERSION);
 });
