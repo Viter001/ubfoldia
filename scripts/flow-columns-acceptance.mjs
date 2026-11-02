@@ -271,8 +271,9 @@ try {
   assert.equal(await page.locator('.flow-legend-note').innerText(), '循环 = 环内前进');
   await screenshot('flow-four-directions.png');
 
-  // 3. Drag across columns. With overlap explicitly allowed, only x changes;
-  //    the default no-overlap mode is exercised by the collision helper tests.
+  // 3. Drag across columns. Overlap is explicitly allowed so the drag can be
+  //    tested independently of collision avoidance; vertical edge snap may
+  //    still align the card to a nearby slot.
   const overlapToggle = page.getByLabel('允许卡片重叠', { exact: true });
   assert.equal(await overlapToggle.isChecked(), false);
   await overlapToggle.check();
@@ -300,7 +301,6 @@ try {
   const movedPage = dragged.project.pages.find((item) => item.id === dragPage.id);
   assert.equal(movedPage.position.x, snap(movedPage.position.x), 'dropped x snaps to a column');
   assert.ok(columnOf(movedPage.position.x) !== beforeColumn, 'drag crossed a column');
-  assert.ok(Math.abs(movedPage.position.y - dragPage.position.y) < 1, 'drag preserves y');
   assert.ok(
     sameTuples(beforeDrag.project, dragged.project),
     'connections are byte-for-byte unchanged',
