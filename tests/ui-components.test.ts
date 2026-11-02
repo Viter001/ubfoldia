@@ -21,6 +21,7 @@ function ribbon(
   project = sample().project,
   page = null,
   mode: 'flow' | 'page' = 'flow',
+  defaultCollapsed = false,
 ) {
   return renderToStaticMarkup(
     React.createElement(CommandRibbon, {
@@ -46,6 +47,7 @@ function ribbon(
       onShowFlow: noop,
       onShowPage: noop,
       onFit: noop,
+      defaultCollapsed,
     }),
   );
 }
@@ -76,6 +78,27 @@ test('the workspace toolbar keeps the tablist pure and preview beside the worksp
   assert.match(html, /class="preview-toggle" aria-label="预览选项"/);
   assert.match(html, /aria-label="预览选项" aria-haspopup="menu" aria-expanded="false"/);
   assert.equal((html.match(/class="preview-primary"/g) ?? []).length, 1);
+});
+
+test('the ribbon toggle expands and collapses the detailed tabpanel', () => {
+  const expanded = ribbon('开始');
+  assert.match(
+    expanded,
+    /class="ribbon-toggle" aria-expanded="true" aria-controls="command-ribbon">收起工具区<\/button>/,
+  );
+  assert.match(expanded, /id="command-ribbon"[^>]*class="command-ribbon"/);
+  assert.doesNotMatch(expanded, /id="command-ribbon"[^>]*hidden/);
+  assert.match(expanded, /aria-label="预览"/);
+  assert.match(expanded, /role="tab" id="command-tab-开始"/);
+
+  const collapsed = ribbon('开始', sample().project, null, 'flow', true);
+  assert.match(
+    collapsed,
+    /class="ribbon-toggle" aria-expanded="false" aria-controls="command-ribbon">展开工具区<\/button>/,
+  );
+  assert.match(collapsed, /id="command-ribbon"[^>]*hidden=""/);
+  assert.match(collapsed, /流程工作区/);
+  assert.match(collapsed, /aria-label="预览"/);
 });
 
 test('the ribbon keeps tab ids, group labels and the original file controls', () => {

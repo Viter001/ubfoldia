@@ -6,12 +6,22 @@ import assert from 'node:assert/strict';
 const run = resolve('.agent/runs/mvp/recent-' + Date.now());
 const projectDir = join(run, 'project');
 const profile = join(run, 'profile');
+const appData = join(run, 'appdata');
 const historyFile = join(profile, 'recent-projects.json');
 await mkdir(profile, { recursive: true });
+await mkdir(appData, { recursive: true });
 await mkdir(projectDir, { recursive: true });
 
 function launchOptions() {
-  const env = { ...process.env, STUDIO_USER_DATA: profile, TEMP: run, TMP: run };
+  const env = {
+    ...process.env,
+    APPDATA: appData,
+    LOCALAPPDATA: appData,
+    STUDIO_APP_DATA: appData,
+    STUDIO_USER_DATA: profile,
+    TEMP: run,
+    TMP: run,
+  };
   delete env.ELECTRON_RUN_AS_NODE;
   return {
     ...(process.env.STUDIO_EXECUTABLE

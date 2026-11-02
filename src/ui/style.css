@@ -1447,3 +1447,66 @@ button:disabled {
   color: var(--muted);
   font-size: 12px;
 }
+
+/* Review build: automatic story levels and compact command tools. */
+.command-ribbon[hidden] {
+  display: none;
+}
+.ribbon-toggle {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.ribbon-toggle[aria-expanded='false'] {
+  color: var(--accent);
+  border-color: #66783a;
+}
+.flow-columns {
+  pointer-events: none;
+}
+.flow-column {
+  position: absolute;
+  pointer-events: none;
+  border-left: 1px dashed #53634b66;
+  background: linear-gradient(90deg, #687d4810, transparent 85%);
+}
+.flow-column:nth-child(even) {
+  background: linear-gradient(90deg, #658b7510, transparent 85%);
+}
+.flow-column-label {
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  padding: 4px 9px;
+  color: #a5b79e;
+  background: #0d0f0ee8;
+  border: 1px solid #354332;
+  font:
+    12px/1.4 'Segoe UI',
+    'Microsoft YaHei',
+    sans-serif;
+  white-space: nowrap;
+}
+.page-level {
+  display: block;
+  padding: 5px 13px;
+  color: #a5b79e;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  border-top: 1px solid var(--border);
+}
+.flow-legend {
+  flex-wrap: wrap;
+  max-width: calc(100% - 30px);
+  gap: 8px 14px;
+}
+@media (max-width: 1000px) {
+  .workspace-actions {
+    gap: 6px;
+  }
+  .ribbon-toggle {
+    padding-inline: 7px;
+  }
+}

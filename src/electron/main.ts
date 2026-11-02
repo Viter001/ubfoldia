@@ -43,7 +43,8 @@ else {
     .whenReady()
     .then(async () => {
       // The rename to Ubfoldia changed the userData folder; carry the recent list over once.
-      const migrated = migrateLegacyUserData(app.getPath('appData'), app.getPath('userData'));
+      const appData = process.env.STUDIO_APP_DATA || app.getPath('appData');
+      const migrated = migrateLegacyUserData(appData, app.getPath('userData'));
       if (migrated.length) console.log('迁移旧用户数据：' + migrated.join('、'));
       decoder = new BrowserWindow({
         show: false,

@@ -16,6 +16,7 @@
     "sample": "tsx scripts/create-sample.ts",
     "test:integration": "node scripts/integration.mjs",
     "test:edge-colors": "node scripts/edge-direction-acceptance.mjs",
+    "test:flow-columns": "node scripts/flow-columns-acceptance.mjs",
     "test:ribbon-window": "node scripts/ribbon-window-acceptance.mjs",
     "test:topbar-preview": "node scripts/topbar-preview-acceptance.mjs",
     "test:agent": "node scripts/agent-host.mjs",

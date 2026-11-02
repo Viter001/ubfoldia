@@ -29,6 +29,9 @@ try {
   page.setDefaultTimeout(12000);
   await page.getByText('流程工作区', { exact: true }).waitFor();
   await page.getByLabel('连线方向图例').waitFor();
+  await page.locator('.flow-column').first().waitFor();
+  assert.equal(await page.locator('.flow-column-label').first().innerText(), '第 1 层');
+  assert.equal(await page.locator('.page-card .page-level').first().innerText(), '第 1 层');
   const invoke = (action, payload) =>
     page.evaluate(
       async ({ action, payload }) => {
@@ -45,6 +48,14 @@ try {
   let actual = await colors();
   assert.ok(actual.includes('rgb(78, 201, 122)'), `forward green missing: ${actual}`);
   assert.ok(actual.includes('rgb(223, 255, 0)'), `loop yellow missing: ${actual}`);
+  assert.ok(actual.includes('rgb(217, 154, 255)'), `loop-back purple missing: ${actual}`);
+  assert.deepEqual(
+    await page
+      .locator('.flow-legend > span')
+      .evaluateAll((nodes) => nodes.map((n) => n.textContent)),
+    ['前进', '循环', '后退', '循环后退'],
+  );
+  assert.equal(await page.locator('.flow-legend-note').innerText(), '循环 = 环内前进');
 
   const state = await invoke('state');
   const source = state.project.pages[1];
@@ -65,11 +76,21 @@ try {
   actual = await colors();
   assert.ok(actual.includes('rgb(120, 150, 255)'), `back blue missing: ${actual}`);
   assert.ok(actual.includes('rgb(223, 255, 0)'), `loop yellow missing after add: ${actual}`);
+  assert.ok(actual.includes('rgb(217, 154, 255)'), `loop-back purple missing after add: ${actual}`);
   assert.ok(actual.includes('rgb(78, 201, 122)'), `forward green missing after add: ${actual}`);
   await page.screenshot({ path: join(run, 'flow-directions.png') });
   await writeFile(
     join(run, 'result.json'),
-    JSON.stringify({ passed: true, colors: actual, legend: ['前进', '循环', '后退'] }, null, 2),
+    JSON.stringify(
+      {
+        passed: true,
+        colors: actual,
+        legend: ['前进', '循环', '后退', '循环后退'],
+        cycleNote: '循环 = 环内前进',
+      },
+      null,
+      2,
+    ),
   );
   console.log('PASS edge direction colors', run);
 } finally {

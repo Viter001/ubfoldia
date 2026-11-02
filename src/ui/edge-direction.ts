@@ -1,43 +1,104 @@
 import type { Project } from '../core/project';
+import { columnIndexForX } from './flow-layout';
 
-export type EdgeDirection = 'forward' | 'loop' | 'back';
+export type EdgeDirection = 'forward' | 'back' | 'loop' | 'loop-back';
 
 export const EDGE_DIRECTION_COLORS: Record<EdgeDirection, string> = {
   forward: '#4ec97a',
-  loop: '#dfff00',
   back: '#7896ff',
+  loop: '#dfff00',
+  'loop-back': '#d99aff',
 };
 
 /**
- * 连线首先看画布上的左右推进方向：
- * - 指向右侧（含同列）的边是“前进”；
- * - 指向左侧的边若同时闭合了一个有向环，则归为“循环”；
- * - 其余指向左侧的边是“后退”。
- *
- * 这样一条环里的前进段仍保持前进色，只有回连段显示为循环色。
+ * Four visual classes. "循环" is a forward step inside a directed cycle, so a
+ * reader never mistakes a loop for a jump back to an earlier level.
  */
-export function classifyEdge(project: Project, sourceId: string, targetId: string): EdgeDirection {
-  const source = project.pages.find((page) => page.id === sourceId);
-  const target = project.pages.find((page) => page.id === targetId);
-  if (!source || !target) return 'forward';
-  if (target.position.x >= source.position.x) return 'forward';
-  return canReach(project, targetId, sourceId) ? 'loop' : 'back';
+export const EDGE_DIRECTION_LEGEND: ReadonlyArray<{
+  direction: EdgeDirection;
+  label: string;
+}> = [
+  { direction: 'forward', label: '前进' },
+  { direction: 'loop', label: '循环' },
+  { direction: 'back', label: '后退' },
+  { direction: 'loop-back', label: '循环后退' },
+];
+
+export const EDGE_CYCLE_NOTE = '循环 = 环内前进';
+
+export type EdgeClassifier = (sourceId: string, targetId: string) => EdgeDirection;
+
+function buildAdjacency(project: Project): Map<string, string[]> {
+  const adjacency = new Map<string, string[]>();
+  for (const page of project.pages) {
+    adjacency.set(
+      page.id,
+      page.exits.flatMap((exit) => (exit.target ? [exit.target] : [])),
+    );
+  }
+  return adjacency;
 }
 
-function canReach(project: Project, startId: string, targetId: string) {
-  const pages = new Map(project.pages.map((page) => [page.id, page]));
-  const seen = new Set<string>();
+function canReach(adjacency: Map<string, string[]>, startId: string, targetId: string): boolean {
+  if (startId === targetId) return true;
+  const seen = new Set<string>([startId]);
   const queue = [startId];
-  while (queue.length) {
-    const id = queue.shift()!;
-    if (id === targetId) return true;
-    if (seen.has(id)) continue;
-    seen.add(id);
-    const page = pages.get(id);
-    if (!page) continue;
-    for (const exit of page.exits) {
-      if (exit.target && !seen.has(exit.target)) queue.push(exit.target);
+  for (let index = 0; index < queue.length; index++) {
+    const id = queue[index];
+    for (const next of adjacency.get(id) ?? []) {
+      if (next === targetId) return true;
+      if (seen.has(next)) continue;
+      seen.add(next);
+      queue.push(next);
     }
   }
   return false;
+}
+
+/**
+ * Build the page lookup, exit graph and reachability cache once, then classify
+ * every edge from it. This avoids rebuilding a graph for each of the four edge
+ * classes on a canvas with many exits.
+ */
+export function createEdgeClassifier(project: Project): EdgeClassifier {
+  const pages = new Map(project.pages.map((page) => [page.id, page]));
+  const adjacency = buildAdjacency(project);
+  const reachable = new Map<string, boolean>();
+  const directions = new Map<string, EdgeDirection>();
+
+  const canReachCached = (from: string, to: string) => {
+    const key = from + '\0' + to;
+    const hit = reachable.get(key);
+    if (hit !== undefined) return hit;
+    const result = canReach(adjacency, from, to);
+    reachable.set(key, result);
+    return result;
+  };
+
+  return (sourceId, targetId) => {
+    const key = sourceId + '\0' + targetId;
+    const hit = directions.get(key);
+    if (hit !== undefined) return hit;
+
+    const source = pages.get(sourceId);
+    const target = pages.get(targetId);
+    let direction: EdgeDirection;
+    if (!source || !target) {
+      direction = 'forward';
+    } else {
+      const sourceColumn = columnIndexForX(source.position.x);
+      const targetColumn = columnIndexForX(target.position.x);
+      const inCycle = canReachCached(targetId, sourceId);
+      if (inCycle) direction = targetColumn < sourceColumn ? 'loop-back' : 'loop';
+      else direction = targetColumn < sourceColumn ? 'back' : 'forward';
+    }
+
+    directions.set(key, direction);
+    return direction;
+  };
+}
+
+/** Convenience wrapper for one-off checks and tests. */
+export function classifyEdge(project: Project, sourceId: string, targetId: string): EdgeDirection {
+  return createEdgeClassifier(project)(sourceId, targetId);
 }

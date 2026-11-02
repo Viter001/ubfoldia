@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import type { Command, Layer, Page, Project } from '../core/project';
 import { COMMAND_GROUPS, type CommandGroup, type WorkspaceMode } from './interaction';
 import { PreviewMenu } from './PreviewMenu';
@@ -27,6 +28,8 @@ export type CommandRibbonProps = {
   onShowFlow: () => void;
   onShowPage: () => void;
   onFit: () => void;
+  /** Initial visual state; production keeps the local state and starts expanded. */
+  defaultCollapsed?: boolean;
 };
 
 /**
@@ -56,7 +59,35 @@ export function CommandRibbon({
   onShowFlow,
   onShowPage,
   onFit,
+  defaultCollapsed = false,
 }: CommandRibbonProps) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Field components commit on blur. Blurring an open ribbon editor before the
+  // collapse click prevents a pending edit from being dropped with the panel.
+  function blurOpenEditor() {
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLElement &&
+      active !== toggleRef.current &&
+      active.closest('#command-ribbon')
+    ) {
+      active.blur();
+    }
+  }
+
+  function chooseGroup(next: CommandGroup) {
+    blurOpenEditor();
+    if (collapsed) setCollapsed(false);
+    onGroup(next);
+  }
+
+  function toggleCollapsed() {
+    blurOpenEditor();
+    setCollapsed((value) => !value);
+  }
+
   return (
     <>
       <div className="workspace-toolbar">
@@ -71,7 +102,7 @@ export function CommandRibbon({
               aria-selected={group === item}
               tabIndex={group === item ? 0 : -1}
               className={`command-tab${group === item ? ' active' : ''}`}
-              onClick={() => onGroup(item)}
+              onClick={() => chooseGroup(item)}
               onKeyDown={(event) => {
                 const index = COMMAND_GROUPS.indexOf(item);
                 if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
@@ -81,7 +112,7 @@ export function CommandRibbon({
                     (index + (event.key === 'ArrowRight' ? 1 : -1) + COMMAND_GROUPS.length) %
                       COMMAND_GROUPS.length
                   ];
-                onGroup(next);
+                chooseGroup(next);
                 document.getElementById(`command-tab-${next}`)?.focus();
               }}
             >
@@ -131,6 +162,17 @@ export function CommandRibbon({
             currentPageId={page?.id ?? null}
             onPreview={onPreview}
           />
+          <button
+            ref={toggleRef}
+            type="button"
+            className="ribbon-toggle"
+            aria-expanded={!collapsed}
+            aria-controls="command-ribbon"
+            onPointerDown={blurOpenEditor}
+            onClick={toggleCollapsed}
+          >
+            {collapsed ? '展开工具区' : '收起工具区'}
+          </button>
         </div>
       </div>
       <div
@@ -138,6 +180,7 @@ export function CommandRibbon({
         className="command-ribbon"
         role="tabpanel"
         aria-labelledby={`command-tab-${group}`}
+        hidden={collapsed}
       >
         <div className="command-tools" role="toolbar" aria-label={`${group}命令`}>
           {group === '文件' && (
