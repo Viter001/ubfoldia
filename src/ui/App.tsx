@@ -22,9 +22,20 @@ export function App() {
   const { state, setState, error, message, setError, setMessage, clearBanner, invoke } =
     useStudioSession();
   const [interaction, dispatch] = useReducer(interactionReducer, initialInteraction);
-  const { mode, pageId, layerId, edgeId, commandGroup, libraryTab, viewportEpoch } = interaction;
+  const {
+    mode,
+    pageId,
+    selectedPageIds,
+    layerId,
+    edgeId,
+    commandGroup,
+    libraryTab,
+    viewportEpoch,
+  } = interaction;
   const project = state.project;
   const page = project?.pages.find((candidate) => candidate.id === pageId);
+  const selectedPages =
+    project?.pages.filter((candidate) => selectedPageIds.includes(candidate.id)) ?? [];
   const layer = page?.layers.find((candidate) => candidate.id === layerId);
   const edgePage = project?.pages.find((candidate) =>
     candidate.exits.some((exit) => exit.id === edgeId),
@@ -277,17 +288,19 @@ export function App() {
               <FlowWorkspace
                 project={project}
                 selectedPageId={pageId}
+                selectedPageIds={selectedPageIds}
                 selectedEdgeId={edgeId}
                 missing={state.missing}
                 view={flowView.view}
                 flowRef={flowRef}
                 fitEpoch={flowView.fitEpoch}
-                onSelectPage={(id) => dispatch({ type: 'select-page', pageId: id })}
+                onSelectPage={(id, additive) =>
+                  dispatch({ type: 'select-page', pageId: id, additive })
+                }
+                onClearSelection={() => dispatch({ type: 'clear-selection' })}
                 onEditPage={edit}
                 onSelectEdge={(id, pageId) => dispatch({ type: 'select-edge', pageId, edgeId: id })}
-                onMovePage={(id, position) =>
-                  command({ type: 'page.patch', pageId: id, patch: { position } })
-                }
+                onMovePages={(updates) => command({ type: 'pages.move', updates })}
                 onConnect={(source, exitId, target) =>
                   command({ type: 'exit.patch', pageId: source, exitId, target })
                 }
@@ -296,12 +309,17 @@ export function App() {
               <FlowInspector
                 project={project}
                 page={page ?? null}
+                selectedPages={selectedPages}
                 hasEdge={!!edge}
                 selectedEdgeId={edgeId}
                 approvedRoots={state.approvedRoots}
                 onCommand={command}
                 onEditPage={edit}
                 onDeletePage={() => setDeleting(true)}
+                onSelectAll={() =>
+                  dispatch({ type: 'select-pages', pageIds: project.pages.map((item) => item.id) })
+                }
+                onClearSelection={() => dispatch({ type: 'clear-selection' })}
                 onApprove={() => void invoke('approve')}
               />
             </div>

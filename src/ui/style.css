@@ -1469,11 +1469,11 @@ button:disabled {
 .flow-column {
   position: absolute;
   pointer-events: none;
-  border-left: 1px dashed #53634b66;
-  background: linear-gradient(90deg, #687d4810, transparent 85%);
+  border-left: 1px solid #364437;
+  background: #10161266;
 }
 .flow-column:nth-child(even) {
-  background: linear-gradient(90deg, #658b7510, transparent 85%);
+  background: #0e131166;
 }
 .flow-column-label {
   position: absolute;
@@ -1508,5 +1508,39 @@ button:disabled {
   }
   .ribbon-toggle {
     padding-inline: 7px;
+  }
+}
+
+/* Flow selection, batch editing and minimap */
+.selection-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.selection-tools .muted {
+  font-size: 11px;
+}
+.batch-editor .section-heading {
+  margin-top: 18px;
+}
+.flow-minimap {
+  width: 190px;
+  height: 132px;
+  border: 1px solid var(--border);
+  background: #0d0f0e;
+  box-shadow: 0 8px 24px #0008;
+}
+.flow-minimap .react-flow__minimap-mask {
+  fill: #0d0f0ecc;
+}
+.flow-minimap .react-flow__minimap-svg {
+  display: block;
+}
+@media (max-width: 1150px) {
+  .flow-minimap {
+    width: 150px;
+    height: 105px;
   }
 }

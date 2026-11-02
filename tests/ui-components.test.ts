@@ -191,12 +191,15 @@ test('flow inspector still exposes page, exit and agent sections', () => {
     React.createElement(FlowInspector, {
       project,
       page,
+      selectedPages: [page],
       hasEdge: false,
       selectedEdgeId: '',
       approvedRoots: [],
       onCommand: noop,
       onEditPage: noop,
       onDeletePage: noop,
+      onSelectAll: noop,
+      onClearSelection: noop,
       onApprove: noop,
     }),
   );
@@ -206,4 +209,34 @@ test('flow inspector still exposes page, exit and agent sections', () => {
   assert.match(html, /删除页面/);
   assert.match(html, /class="agent-panel"/);
   assert.match(html, /授权素材文件夹/);
+});
+
+test('flow inspector exposes batch controls for a multi-page selection', () => {
+  const service = new CommandService(createProject('批量面板', 1280, 720));
+  const first = service.execute({ type: 'page.add', name: '第一页' }).id!;
+  const second = service.execute({ type: 'page.add', name: '第二页' }).id!;
+  const project = service.snapshot();
+  const html = renderToStaticMarkup(
+    React.createElement(FlowInspector, {
+      project,
+      page: project.pages.find((item) => item.id === second)!,
+      selectedPages: project.pages.filter((item) => item.id === first || item.id === second),
+      hasEdge: false,
+      selectedEdgeId: '',
+      approvedRoots: [],
+      onCommand: noop,
+      onEditPage: noop,
+      onDeletePage: noop,
+      onSelectAll: noop,
+      onClearSelection: noop,
+      onApprove: noop,
+    }),
+  );
+  assert.match(html, /批量属性 · 2 页/);
+  assert.match(html, /Shift \/ Ctrl 点击卡片多选/);
+  assert.match(html, /批量背景颜色/);
+  assert.match(html, /应用背景色到 2 页/);
+  assert.match(html, /批量转场效果/);
+  assert.match(html, /应用转场到 2 页/);
+  assert.match(html, /清空选择/);
 });

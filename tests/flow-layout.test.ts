@@ -4,10 +4,12 @@ import {
   FLOW_COLUMN_MAX,
   FLOW_COLUMN_ORIGIN_X,
   FLOW_COLUMN_STEP_X,
+  FLOW_VERTICAL_SNAP_DISTANCE,
   columnIndexForX,
   flowColumnRange,
   levelForX,
   snapXToColumn,
+  snapYToNearbyCard,
   xForColumnIndex,
 } from '../src/ui/flow-layout.ts';
 
@@ -114,4 +116,34 @@ test('missing viewport metrics fall back to node columns safely', () => {
     height: Number.NaN,
   });
   assert.deepEqual({ start: empty.start, end: empty.end }, { start: 0, end: 0 });
+});
+
+test('vertical snapping uses a narrow same-column threshold and nearest card', () => {
+  const cards = [
+    { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 100 } },
+    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X + 20, y: 160 } },
+    { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 500 } },
+  ];
+  assert.equal(snapYToNearbyCard(110, FLOW_COLUMN_ORIGIN_X, cards), 100);
+  assert.equal(snapYToNearbyCard(130, FLOW_COLUMN_ORIGIN_X, cards), 130);
+  assert.equal(
+    snapYToNearbyCard(145, FLOW_COLUMN_ORIGIN_X, cards),
+    160,
+    'nearest same-column card is used',
+  );
+  assert.equal(
+    snapYToNearbyCard(500, FLOW_COLUMN_ORIGIN_X, cards),
+    500,
+    'other columns do not snap',
+  );
+  assert.equal(
+    snapYToNearbyCard(110, FLOW_COLUMN_ORIGIN_X, cards, new Set(['a'])),
+    110,
+    'excluded cards are ignored',
+  );
+  assert.equal(
+    snapYToNearbyCard(100 + FLOW_VERTICAL_SNAP_DISTANCE + 1, FLOW_COLUMN_ORIGIN_X, cards),
+    100 + FLOW_VERTICAL_SNAP_DISTANCE + 1,
+    'threshold is narrow',
+  );
 });

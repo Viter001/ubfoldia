@@ -50,6 +50,41 @@ export function snapXToColumn(x: number): number {
   return xForColumnIndex(columnIndexForX(x));
 }
 
+/** Narrow vertical hit range used when aligning a dragged card to a sibling. */
+export const FLOW_VERTICAL_SNAP_DISTANCE = 24;
+
+export type FlowSnapCard = {
+  id: string;
+  position: { x: number; y: number };
+};
+
+/**
+ * Snap only when the dragged card is already very close to another card in the
+ * same level column. A narrow threshold avoids surprising jumps while still
+ * letting users align a row of cards by feel.
+ */
+export function snapYToNearbyCard(
+  y: number,
+  x: number,
+  cards: readonly FlowSnapCard[],
+  excludedIds: ReadonlySet<string> = new Set(),
+  threshold = FLOW_VERTICAL_SNAP_DISTANCE,
+): number {
+  if (!Number.isFinite(y) || !Number.isFinite(x)) return y;
+  const column = columnIndexForX(x);
+  let bestDistance = Number.POSITIVE_INFINITY;
+  let bestY = y;
+  for (const card of cards) {
+    if (excludedIds.has(card.id) || columnIndexForX(card.position.x) !== column) continue;
+    const distance = Math.abs(card.position.y - y);
+    if (distance <= threshold && distance < bestDistance) {
+      bestDistance = distance;
+      bestY = card.position.y;
+    }
+  }
+  return bestY;
+}
+
 /** Human-facing level number (column 0 is level 1). */
 export function levelForX(x: number): number {
   return columnIndexForX(x) + 1;

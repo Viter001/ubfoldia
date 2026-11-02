@@ -228,3 +228,111 @@ test('envelopes require valid project ids and string request ids within the limi
   assert.equal(s.project.pages.length, 0);
   assert.equal(s.project.revision, 0);
 });
+
+test('batch page moves are one atomic command and one undo step', () => {
+  const s = fresh();
+  const a = addPage(s, 'A'),
+    b = addPage(s, 'B'),
+    c = addPage(s, 'C');
+  const before = s.snapshot();
+  const revision = s.project.revision;
+  s.execute({
+    type: 'pages.move',
+    updates: [
+      { pageId: a, position: { x: 80, y: 80 } },
+      { pageId: b, position: { x: 440, y: 80 } },
+      { pageId: c, position: { x: 800, y: 350 } },
+    ],
+  });
+  assert.deepEqual(
+    s.project.pages.map((page) => page.position),
+    [
+      { x: 80, y: 80 },
+      { x: 440, y: 80 },
+      { x: 800, y: 350 },
+    ],
+  );
+  assert.equal(s.project.revision, revision + 1);
+  s.undo();
+  assert.deepEqual(s.snapshot().pages, before.pages);
+  s.redo();
+  assert.deepEqual(
+    s.project.pages.map((page) => page.position),
+    [
+      { x: 80, y: 80 },
+      { x: 440, y: 80 },
+      { x: 800, y: 350 },
+    ],
+  );
+});
+
+test('batch page patches apply only supported appearance fields to every page', () => {
+  const s = fresh();
+  const a = addPage(s, 'A'),
+    b = addPage(s, 'B');
+  const before = s.snapshot();
+  s.execute({
+    type: 'pages.patch',
+    pageIds: [a, b],
+    patch: {
+      background: '#123456',
+      transition: { type: 'fade', duration: 1.4 },
+    },
+  });
+  for (const page of s.project.pages) {
+    assert.equal(page.background, '#123456');
+    assert.deepEqual(page.transition, { type: 'fade', duration: 1.4 });
+    assert.equal(page.exits.length, 0);
+  }
+  assert.throws(
+    () =>
+      s.execute({
+        type: 'pages.patch',
+        pageIds: [a],
+        patch: { name: '批量改名' },
+      } as unknown as Command),
+    /INVALID_COMMAND/,
+  );
+  assert.throws(
+    () => s.execute({ type: 'pages.move', updates: [] } as unknown as Command),
+    /INVALID_COMMAND/,
+  );
+  s.undo();
+  assert.deepEqual(s.snapshot().pages, before.pages);
+});
+
+test('batch commands reject duplicate or missing pages without mutating state', () => {
+  const s = fresh();
+  const a = addPage(s, 'A'),
+    b = addPage(s, 'B');
+  const before = s.snapshot();
+  assert.throws(
+    () =>
+      s.execute({
+        type: 'pages.move',
+        updates: [
+          { pageId: a, position: { x: 0, y: 0 } },
+          { pageId: a, position: { x: 1, y: 1 } },
+        ],
+      }),
+    /DUPLICATE_PAGE/,
+  );
+  assert.throws(
+    () =>
+      s.execute({
+        type: 'pages.patch',
+        pageIds: [a, 'missing'],
+        patch: { background: '#111111' },
+      }),
+    /页面不存在/,
+  );
+  assert.deepEqual(s.snapshot(), before);
+  assert.equal(s.canUndo, true, 'failed batch commands do not add history');
+  s.undo();
+  assert.equal(s.project.pages.length, 1);
+  s.redo();
+  assert.deepEqual(
+    s.project.pages.map((page) => page.id),
+    [a, b],
+  );
+});

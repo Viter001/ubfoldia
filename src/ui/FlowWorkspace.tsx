@@ -4,6 +4,7 @@ import {
   Background,
   Controls,
   Handle,
+  MiniMap,
   Position,
   ViewportPortal,
   applyNodeChanges,
@@ -28,6 +29,7 @@ import {
   flowColumnRange,
   levelForX,
   snapXToColumn,
+  snapYToNearbyCard,
   xForColumnIndex,
 } from './flow-layout';
 
@@ -147,29 +149,33 @@ function FlowColumns({ project }: { project: Project }) {
 export function FlowWorkspace({
   project,
   selectedPageId,
+  selectedPageIds,
   selectedEdgeId,
   missing,
   view,
   flowRef,
   fitEpoch,
   onSelectPage,
+  onClearSelection,
   onEditPage,
   onSelectEdge,
-  onMovePage,
+  onMovePages,
   onConnect,
   onAddPage,
 }: {
   project: Project;
   selectedPageId: string;
+  selectedPageIds: string[];
   selectedEdgeId: string;
   missing: string[];
   view: FlowViewStore;
   flowRef: { current: FlowInstance | null };
   fitEpoch: number;
-  onSelectPage: (pageId: string) => void;
+  onSelectPage: (pageId: string, additive?: boolean) => void;
+  onClearSelection: () => void;
   onEditPage: (pageId: string) => void;
   onSelectEdge: (edgeId: string, pageId: string) => void;
-  onMovePage: (pageId: string, position: { x: number; y: number }) => void;
+  onMovePages: (updates: Array<{ pageId: string; position: { x: number; y: number } }>) => void;
   onConnect: (source: string, exitId: string, target: string) => void;
   onAddPage: () => void;
 }) {
@@ -185,7 +191,7 @@ export function FlowWorkspace({
         // Old projects keep their stored x; the canvas only projects it onto
         // the nearest column. Nothing is written until the user drags.
         position: { x: snapXToColumn(p.position.x), y: p.position.y },
-        selected: p.id === selectedPageId,
+        selected: selectedPageIds.includes(p.id),
         data: {
           page: p,
           project,
@@ -196,7 +202,7 @@ export function FlowWorkspace({
         },
       })),
     );
-  }, [project, selectedPageId, missing, onEditPage]);
+  }, [project, selectedPageIds, missing, onEditPage]);
 
   const edges = useMemo(() => {
     const classify = createEdgeClassifier(project);
@@ -273,20 +279,48 @@ export function FlowWorkspace({
           rememberViewport(view, v);
         }}
         onNodesChange={(changes) => setNodes((n) => applyNodeChanges(changes, n))}
-        onNodeClick={(_, n) => onSelectPage(n.id)}
+        onNodeClick={(event, n) =>
+          onSelectPage(n.id, event.shiftKey || event.ctrlKey || event.metaKey)
+        }
+        onPaneClick={onClearSelection}
         onNodeDoubleClick={(_, n) => onEditPage(n.id)}
-        onNodeDragStop={(_, n) => {
-          const position = { x: snapXToColumn(n.position.x), y: n.position.y };
-          const stored = project.pages.find((page) => page.id === n.id)?.position;
-          if (stored && stored.x === position.x && stored.y === position.y) return;
-          if (position.x !== n.position.x) {
-            setNodes((current) =>
-              current.map((node) => (node.id === n.id ? { ...node, position } : node)),
-            );
+        onNodeDragStop={(_, dragged) => {
+          const current = flowRef.current?.getNodes() ?? nodes;
+          const draggedNode = current.find((node) => node.id === dragged.id);
+          if (!draggedNode) return;
+          const selected = new Set(
+            selectedPageIds.includes(dragged.id) ? selectedPageIds : [dragged.id],
+          );
+          selected.add(dragged.id);
+          const targetX = snapXToColumn(draggedNode.position.x);
+          const otherPages = project.pages.filter((page) => !selected.has(page.id));
+          const targetY = snapYToNearbyCard(draggedNode.position.y, targetX, otherPages);
+          const delta = {
+            x: targetX - draggedNode.position.x,
+            y: targetY - draggedNode.position.y,
+          };
+          const updates: Array<{ pageId: string; position: { x: number; y: number } }> = [];
+          const nextPositions = new Map<string, { x: number; y: number }>();
+          for (const node of current) {
+            if (!selected.has(node.id)) continue;
+            const position = {
+              x: node.position.x + delta.x,
+              y: node.position.y + delta.y,
+            };
+            nextPositions.set(node.id, position);
+            const stored = project.pages.find((page) => page.id === node.id)?.position;
+            if (!stored || stored.x !== position.x || stored.y !== position.y)
+              updates.push({ pageId: node.id, position });
           }
-          // Only the dragged page's snapped x and preserved y are committed;
-          // exits, targets and playback semantics never enter this patch.
-          onMovePage(n.id, position);
+          if (!updates.length) return;
+          setNodes((currentNodes) =>
+            currentNodes.map((node) => {
+              const position = nextPositions.get(node.id);
+              return position ? { ...node, position } : node;
+            }),
+          );
+          // One batch command keeps the whole multi-card drag as one undo step.
+          onMovePages(updates);
         }}
         onEdgeClick={(_, e) => {
           const p = project.pages.find((candidate) => candidate.exits.some((x) => x.id === e.id));
@@ -303,6 +337,17 @@ export function FlowWorkspace({
         <FlowColumns project={project} />
         <Background gap={24} size={1} />
         <Controls showInteractive={false} />
+        <MiniMap
+          className="flow-minimap"
+          ariaLabel="流程缩略图"
+          position="bottom-right"
+          pannable
+          zoomable
+          nodeColor={(node) => (node.selected ? '#dfff00' : '#5e7b65')}
+          nodeStrokeColor="#1b291f"
+          nodeBorderRadius={2}
+          maskColor="rgba(5, 9, 7, 0.72)"
+        />
       </ReactFlow>
       {!project.pages.length && (
         <div className="canvas-empty">

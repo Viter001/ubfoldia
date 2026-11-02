@@ -147,3 +147,56 @@ test('an invalid page selection on the same project falls back to the flow works
   assert.equal(state.layerId, '');
   assert.equal(state.mode, 'flow');
 });
+
+test('shift-click style additive selection supports multiple pages and a primary page', () => {
+  const service = new CommandService(createProject('多选', 1280, 720));
+  const a = service.execute({ type: 'page.add', name: 'A' }).id!;
+  const b = service.execute({ type: 'page.add', name: 'B' }).id!;
+  let state = interactionReducer(initialInteraction, {
+    type: 'sync',
+    project: service.snapshot(),
+  });
+  state = interactionReducer(state, { type: 'select-page', pageId: a });
+  state = interactionReducer(state, { type: 'select-page', pageId: b, additive: true });
+  assert.deepEqual(state.selectedPageIds, [a, b]);
+  assert.equal(state.pageId, b);
+  state = interactionReducer(state, { type: 'select-page', pageId: a, additive: true });
+  assert.deepEqual(state.selectedPageIds, [b]);
+  assert.equal(state.pageId, b);
+  state = interactionReducer(state, { type: 'select-page', pageId: b, additive: true });
+  assert.deepEqual(state.selectedPageIds, []);
+  assert.equal(state.pageId, '');
+  assert.equal(state.mode, 'flow');
+});
+
+test('selecting all pages and clearing selection are explicit interaction actions', () => {
+  const service = new CommandService(createProject('批量选择', 1280, 720));
+  const a = service.execute({ type: 'page.add', name: 'A' }).id!;
+  const b = service.execute({ type: 'page.add', name: 'B' }).id!;
+  let state = interactionReducer(initialInteraction, {
+    type: 'sync',
+    project: service.snapshot(),
+  });
+  state = interactionReducer(state, { type: 'select-pages', pageIds: [a, b] });
+  assert.deepEqual(state.selectedPageIds, [a, b]);
+  assert.equal(state.pageId, b);
+  state = interactionReducer(state, { type: 'clear-selection' });
+  assert.deepEqual(state.selectedPageIds, []);
+  assert.equal(state.pageId, '');
+  assert.equal(state.mode, 'flow');
+});
+
+test('a revision update removes stale pages from the multi-selection', () => {
+  const service = new CommandService(createProject('多选清理', 1280, 720));
+  const a = service.execute({ type: 'page.add', name: 'A' }).id!;
+  const b = service.execute({ type: 'page.add', name: 'B' }).id!;
+  let state = interactionReducer(initialInteraction, {
+    type: 'sync',
+    project: service.snapshot(),
+  });
+  state = interactionReducer(state, { type: 'select-pages', pageIds: [a, b] });
+  service.execute({ type: 'page.delete', pageId: b });
+  state = interactionReducer(state, { type: 'sync', project: service.snapshot() });
+  assert.deepEqual(state.selectedPageIds, [a]);
+  assert.equal(state.pageId, a);
+});

@@ -77,6 +77,13 @@ const pagePatchSchema = z
   })
   .partial()
   .strict();
+const batchPagePatchSchema = z
+  .object({
+    transition: effect,
+    background: z.string().regex(/^#[0-9a-f]{6}$/i),
+  })
+  .partial()
+  .strict();
 const layerPatchSchema = z
   .object({
     name: z.string().max(300),
@@ -136,6 +143,29 @@ const commandSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('layer.delete'), pageId: id, layerId: id }).strict(),
   z.object({ type: z.literal('layer.move'), pageId: id, layerId: id, delta: number }).strict(),
+  z
+    .object({
+      type: z.literal('pages.move'),
+      updates: z
+        .array(
+          z
+            .object({
+              pageId: id,
+              position: z.object({ x: number, y: number }).strict(),
+            })
+            .strict(),
+        )
+        .min(1)
+        .max(1000),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal('pages.patch'),
+      pageIds: z.array(id).min(1).max(1000),
+      patch: batchPagePatchSchema,
+    })
+    .strict(),
   z.object({ type: z.literal('asset.add'), asset }).strict(),
 ]);
 const commandTypes = new Set([
@@ -150,6 +180,8 @@ const commandTypes = new Set([
   'layer.patch',
   'layer.delete',
   'layer.move',
+  'pages.move',
+  'pages.patch',
   'asset.add',
 ]);
 function parseCommand(input: unknown): Command {
@@ -188,6 +220,15 @@ export type Command =
     }
   | { type: 'layer.delete'; pageId: string; layerId: string }
   | { type: 'layer.move'; pageId: string; layerId: string; delta: number }
+  | {
+      type: 'pages.move';
+      updates: Array<{ pageId: string; position: { x: number; y: number } }>;
+    }
+  | {
+      type: 'pages.patch';
+      pageIds: string[];
+      patch: { transition?: Page['transition']; background?: string };
+    }
   | { type: 'asset.add'; asset: Asset };
 export const uid = () => crypto.randomUUID();
 export function createProject(name: string, width: number, height: number): Project {
@@ -381,6 +422,24 @@ export class CommandService {
         const j = Math.max(0, Math.min(pg.layers.length - 1, i + Math.sign(command.delta)));
         const [l] = pg.layers.splice(i, 1);
         pg.layers.splice(j, 0, l);
+        break;
+      }
+      case 'pages.move': {
+        const seen = new Set<string>();
+        for (const update of command.updates) {
+          if (seen.has(update.pageId)) throw Error('DUPLICATE_PAGE');
+          seen.add(update.pageId);
+          Object.assign(getPage(update.pageId).position, update.position);
+        }
+        break;
+      }
+      case 'pages.patch': {
+        const seen = new Set<string>();
+        for (const pageId of command.pageIds) {
+          if (seen.has(pageId)) throw Error('DUPLICATE_PAGE');
+          seen.add(pageId);
+          Object.assign(getPage(pageId), structuredClone(command.patch));
+        }
         break;
       }
       case 'asset.add':

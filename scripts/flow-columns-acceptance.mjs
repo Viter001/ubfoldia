@@ -150,6 +150,94 @@ try {
   );
   await screenshot('flow-columns.png');
 
+  // 1b. Minimap, flat column treatment, multi-select and batch editing.
+  await page.locator('.react-flow__minimap').waitFor();
+  assert.match(await page.locator('.react-flow__minimap title').textContent(), /流程缩略图/);
+  assert.ok((await page.locator('.react-flow__minimap-node').count()) >= 5);
+  assert.equal(
+    await page
+      .locator('.flow-column')
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundImage),
+    'none',
+    'level columns no longer use gradient backgrounds',
+  );
+
+  const batchA = fork;
+  const batchB = opened.project.pages.find((item) => item.name === '走向山谷');
+  assert.ok(batchB, 'second page for multi-selection');
+  await page.locator(`.react-flow__node[data-id="${batchA.id}"]`).click();
+  await page.locator(`.react-flow__node[data-id="${batchB.id}"]`).click({ modifiers: ['Shift'] });
+  assert.equal(await page.locator('.react-flow__node.selected').count(), 2);
+  await page.getByText('批量属性 · 2 页', { exact: true }).waitFor();
+  await page.locator('input[aria-label="批量背景颜色"]').evaluate((element) => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    setter.call(element, '#123456');
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.getByRole('button', { name: '应用背景色到 2 页', exact: true }).click();
+  const batched = await waitForState(
+    (current) =>
+      [batchA.id, batchB.id].every(
+        (id) => current.project.pages.find((page) => page.id === id)?.background === '#123456',
+      ),
+    'batch background edit',
+  );
+  assert.equal(batched.project.pages.find((page) => page.id === batchA.id).background, '#123456');
+  assert.equal(batched.project.pages.find((page) => page.id === batchB.id).background, '#123456');
+  await screenshot('flow-batch-editing.png');
+
+  const beforeBatchDrag = await state();
+  const dragA = beforeBatchDrag.project.pages.find((page) => page.id === batchA.id);
+  const dragB = beforeBatchDrag.project.pages.find((page) => page.id === batchB.id);
+  const nodeTransform = (id) =>
+    page.locator(`.react-flow__node[data-id="${id}"]`).evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+      return { x: matrix.m41, y: matrix.m42 };
+    });
+  const localBeforeA = await nodeTransform(batchA.id);
+  const localBeforeB = await nodeTransform(batchB.id);
+  const batchDragNode = page.locator(`.react-flow__node[data-id="${batchA.id}"]`);
+  const batchDragBox = await batchDragNode.locator('.card-heading').boundingBox();
+  assert.ok(batchDragBox, 'selected card is visible for batch drag');
+  await page.mouse.move(
+    batchDragBox.x + batchDragBox.width / 2,
+    batchDragBox.y + batchDragBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    batchDragBox.x + batchDragBox.width / 2 + 300,
+    batchDragBox.y + batchDragBox.height / 2,
+    { steps: 16 },
+  );
+  await page.mouse.up();
+  const afterBatchDrag = await waitForState((current) => {
+    const a = current.project.pages.find((page) => page.id === batchA.id);
+    const b = current.project.pages.find((page) => page.id === batchB.id);
+    return a.position.x !== dragA.position.x && b.position.x !== dragB.position.x;
+  }, 'batch drag');
+  const movedA = afterBatchDrag.project.pages.find((page) => page.id === batchA.id);
+  const movedB = afterBatchDrag.project.pages.find((page) => page.id === batchB.id);
+  const localAfterA = await nodeTransform(batchA.id);
+  const localAfterB = await nodeTransform(batchB.id);
+  assert.equal(localAfterA.x - localBeforeA.x, localAfterB.x - localBeforeB.x);
+  assert.equal(localAfterA.y - localBeforeA.y, localAfterB.y - localBeforeB.y);
+  assert.equal(movedA.position.x, snap(movedA.position.x));
+  assert.equal(movedB.position.x, snap(movedB.position.x));
+  assert.ok(sameTuples(beforeBatchDrag.project, afterBatchDrag.project));
+  const undoBatch = await invoke('undo');
+  assert.deepEqual(
+    undoBatch.project.pages.find((page) => page.id === batchA.id).position,
+    dragA.position,
+  );
+  assert.deepEqual(
+    undoBatch.project.pages.find((page) => page.id === batchB.id).position,
+    dragB.position,
+  );
+  await page.getByRole('button', { name: '清空选择', exact: true }).click();
+  await page.waitForTimeout(250);
+
   // 2. Build a deterministic layout with all four edge classes.
   const added = await invoke('command', { type: 'page.add', name: '回看支线' });
   const backTarget = added.project.pages.find((item) => item.name === '回看支线');
@@ -319,6 +407,21 @@ try {
         colors: actualColors,
         legend: ['前进', '循环', '后退', '循环后退'],
         cycleNote: '循环 = 环内前进',
+        minimap: { present: true, nodes: await page.locator('.react-flow__minimap-node').count() },
+        flatColumns: true,
+        batch: {
+          selected: 2,
+          background: '#123456',
+          dragDeltaA: {
+            x: movedA.position.x - dragA.position.x,
+            y: movedA.position.y - dragA.position.y,
+          },
+          dragDeltaB: {
+            x: movedB.position.x - dragB.position.x,
+            y: movedB.position.y - dragB.position.y,
+          },
+          oneUndoRestored: true,
+        },
         drag: {
           before: dragPage.position,
           snapped: movedPage.position,
@@ -332,7 +435,10 @@ try {
       2,
     ),
   );
-  console.log('PASS flow columns, four edge classes, drag/undo/save/reopen, ribbon collapse', run);
+  console.log(
+    'PASS flow columns, minimap, flat columns, batch edit/drag/undo, four edge classes, save/reopen, ribbon collapse',
+    run,
+  );
 } finally {
   if (session?.app) {
     await session.app.evaluate(({ app }) => app.exit(0)).catch(() => {});

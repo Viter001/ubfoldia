@@ -13,7 +13,10 @@ export type LibraryTab = 'layers' | 'assets';
 export type InteractionState = {
   projectId: string | null;
   mode: WorkspaceMode;
+  /** Primary selected page; it drives the inspector in flow mode. */
   pageId: string;
+  /** All selected pages; always contains pageId when pageId is non-empty. */
+  selectedPageIds: string[];
   layerId: string;
   edgeId: string;
   commandGroup: CommandGroup;
@@ -26,6 +29,7 @@ export const initialInteraction: InteractionState = {
   projectId: null,
   mode: 'flow',
   pageId: '',
+  selectedPageIds: [],
   layerId: '',
   edgeId: '',
   commandGroup: '开始',
@@ -36,7 +40,9 @@ export const initialInteraction: InteractionState = {
 export type InteractionAction =
   | { type: 'sync'; project: Project | null }
   | { type: 'replace'; project: Project | null }
-  | { type: 'select-page'; pageId: string }
+  | { type: 'select-page'; pageId: string; additive?: boolean }
+  | { type: 'select-pages'; pageIds: string[] }
+  | { type: 'clear-selection' }
   | { type: 'edit-page'; pageId: string }
   | { type: 'select-layer'; layerId: string }
   | { type: 'select-edge'; pageId: string; edgeId: string }
@@ -49,17 +55,61 @@ function reset(projectId: string | null, viewportEpoch: number): InteractionStat
   return { ...initialInteraction, projectId, viewportEpoch };
 }
 
-function sameProject(state: InteractionState, project: Project): InteractionState {
-  const page = project.pages.find((item) => item.id === state.pageId);
-  if (!page) {
-    if (!state.pageId && !state.layerId && !state.edgeId && state.mode === 'flow') return state;
-    return { ...state, pageId: '', layerId: '', edgeId: '', mode: 'flow' };
-  }
-  const layerStale = !!state.layerId && !page.layers.some((item) => item.id === state.layerId);
-  const edgeStale = !!state.edgeId && !page.exits.some((item) => item.id === state.edgeId);
-  if (!layerStale && !edgeStale) return state;
+function withPrimary(
+  state: InteractionState,
+  pageIds: string[],
+  primary?: string,
+): InteractionState {
+  const selectedPageIds = [...new Set(pageIds.filter(Boolean))];
+  const pageId =
+    primary && selectedPageIds.includes(primary)
+      ? primary
+      : selectedPageIds.includes(state.pageId)
+        ? state.pageId
+        : (selectedPageIds[selectedPageIds.length - 1] ?? '');
   return {
     ...state,
+    pageId,
+    selectedPageIds,
+    edgeId: '',
+    ...(pageId === state.pageId ? {} : { layerId: '' }),
+  };
+}
+
+function sameProject(state: InteractionState, project: Project): InteractionState {
+  const pages = new Map(project.pages.map((item) => [item.id, item]));
+  let selectedPageIds = state.selectedPageIds.filter((id) => pages.has(id));
+  let pageId = pages.has(state.pageId) ? state.pageId : (selectedPageIds.at(-1) ?? '');
+  if (pageId && !selectedPageIds.includes(pageId)) selectedPageIds = [...selectedPageIds, pageId];
+
+  if (!pageId) {
+    if (
+      !state.pageId &&
+      !state.layerId &&
+      !state.edgeId &&
+      !state.selectedPageIds.length &&
+      state.mode === 'flow'
+    )
+      return state;
+    return {
+      ...state,
+      pageId: '',
+      selectedPageIds: [],
+      layerId: '',
+      edgeId: '',
+      mode: 'flow',
+    };
+  }
+
+  const page = pages.get(pageId)!;
+  const layerStale = !!state.layerId && !page.layers.some((item) => item.id === state.layerId);
+  const edgeStale = !!state.edgeId && !page.exits.some((item) => item.id === state.edgeId);
+  if (!layerStale && !edgeStale && selectedPageIds.length === state.selectedPageIds.length)
+    return state;
+  return {
+    ...state,
+    pageId,
+    selectedPageIds,
     ...(layerStale ? { layerId: '' } : {}),
     ...(edgeStale ? { edgeId: '' } : {}),
   };
@@ -84,19 +134,35 @@ export function interactionReducer(
       // project is re-opened; only revision updates keep valid selections.
       return reset(action.project?.id ?? null, state.viewportEpoch + 1);
     case 'select-page': {
-      const samePage = state.pageId === action.pageId;
+      if (!action.additive) return withPrimary(state, [action.pageId], action.pageId);
+      const selected = new Set(state.selectedPageIds);
+      const wasSelected = selected.has(action.pageId);
+      if (wasSelected) selected.delete(action.pageId);
+      else selected.add(action.pageId);
+      const primary = wasSelected
+        ? selected.has(state.pageId)
+          ? state.pageId
+          : (Array.from(selected).at(-1) ?? '')
+        : action.pageId;
+      return withPrimary(state, Array.from(selected), primary);
+    }
+    case 'select-pages':
+      return withPrimary(state, action.pageIds);
+    case 'clear-selection':
       return {
         ...state,
-        pageId: action.pageId,
+        pageId: '',
+        selectedPageIds: [],
+        layerId: '',
         edgeId: '',
-        ...(samePage ? {} : { layerId: '' }),
+        mode: 'flow',
       };
-    }
     case 'edit-page':
       return {
         ...state,
         mode: 'page',
         pageId: action.pageId,
+        selectedPageIds: [action.pageId],
         layerId: '',
         edgeId: '',
         commandGroup: '开始',
@@ -104,7 +170,12 @@ export function interactionReducer(
     case 'select-layer':
       return { ...state, layerId: action.layerId };
     case 'select-edge':
-      return { ...state, pageId: action.pageId, edgeId: action.edgeId };
+      return {
+        ...state,
+        pageId: action.pageId,
+        selectedPageIds: [action.pageId],
+        edgeId: action.edgeId,
+      };
     case 'mode':
       if (action.mode === 'page' && !state.pageId) return state;
       return { ...state, mode: action.mode };
