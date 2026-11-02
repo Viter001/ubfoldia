@@ -426,6 +426,8 @@ export function FlowWorkspace({
           nodeStrokeColor="var(--minimap-node-stroke)"
           nodeBorderRadius={2}
           maskColor="var(--minimap-mask)"
+          maskStrokeColor="var(--accent)"
+          maskStrokeWidth={2}
         />
       </ReactFlow>
       <label className="flow-overlap-toggle">

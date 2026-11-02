@@ -154,6 +154,10 @@ try {
   await page.locator('.react-flow__minimap').waitFor();
   assert.match(await page.locator('.react-flow__minimap title').textContent(), /流程缩略图/);
   assert.ok((await page.locator('.react-flow__minimap-node').count()) >= 5);
+  const viewportStroke = await page
+    .locator('.react-flow__minimap-mask')
+    .evaluate((element) => getComputedStyle(element).stroke);
+  assert.notEqual(viewportStroke, 'none', 'minimap viewport has a visible border');
   assert.equal(
     await page
       .locator('.flow-column')
@@ -413,7 +417,11 @@ try {
         colors: actualColors,
         legend: ['前进', '循环', '后退', '循环后退'],
         cycleNote: '循环 = 环内前进',
-        minimap: { present: true, nodes: await page.locator('.react-flow__minimap-node').count() },
+        minimap: {
+          present: true,
+          nodes: await page.locator('.react-flow__minimap-node').count(),
+          viewportStroke,
+        },
         flatColumns: true,
         overlapControl: { defaultAllowed: false, toggleWorks: true },
         batch: {

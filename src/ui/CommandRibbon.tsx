@@ -85,6 +85,12 @@ export function CommandRibbon({
 
   function chooseGroup(next: CommandGroup) {
     blurOpenEditor();
+    // Clicking the active tab toggles its ribbon, matching the explicit
+    // collapse button while switching tabs still opens the new group.
+    if (next === group) {
+      setCollapsed((value) => !value);
+      return;
+    }
     if (collapsed) setCollapsed(false);
     onGroup(next);
   }
@@ -106,6 +112,14 @@ export function CommandRibbon({
               id={`command-tab-${item}`}
               aria-controls="command-ribbon"
               aria-selected={group === item}
+              aria-expanded={group === item ? !collapsed : undefined}
+              title={
+                group === item
+                  ? collapsed
+                    ? '再次点击展开工具区'
+                    : '再次点击收起工具区'
+                  : `切换到${item}命令`
+              }
               tabIndex={group === item ? 0 : -1}
               className={`command-tab${group === item ? ' active' : ''}`}
               onClick={() => chooseGroup(item)}

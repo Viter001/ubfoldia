@@ -2328,3 +2328,10 @@ button:disabled {
     flex: 1 1 90px;
   }
 }
+
+.flow-minimap .react-flow__minimap-mask {
+  stroke: var(--accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 2px var(--accent-soft));
+}

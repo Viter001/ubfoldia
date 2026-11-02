@@ -138,7 +138,6 @@ try {
     },
     join(moved, 'project.json'),
   );
-  await page.getByRole('tab', { name: '文件', exact: true }).click();
   await page.getByRole('button', { name: '打开', exact: true }).click();
   assert.equal((await state()).missing.length, 0);
   assert.equal((await state()).canUndo, false);

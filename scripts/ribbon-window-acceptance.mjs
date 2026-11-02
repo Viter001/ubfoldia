@@ -156,6 +156,18 @@ try {
   assert.equal(await page.getByRole('button', { name: '从头预览', exact: true }).count(), 1);
   assert.equal(await page.getByRole('button', { name: '预览选项', exact: true }).count(), 1);
 
+  // Active command tab toggles its ribbon; another tab switches and opens.
+  const insertTab = page.getByRole('tab', { name: '插入', exact: true });
+  await insertTab.click();
+  assert.equal(await page.locator('#command-ribbon').isVisible(), true);
+  assert.equal(await insertTab.getAttribute('aria-expanded'), 'true');
+  await insertTab.click();
+  assert.equal(await page.locator('#command-ribbon').isVisible(), false);
+  assert.equal(await insertTab.getAttribute('aria-expanded'), 'false');
+  await insertTab.click();
+  assert.equal(await page.locator('#command-ribbon').isVisible(), true);
+  assert.equal(await insertTab.getAttribute('aria-expanded'), 'true');
+
   async function groups() {
     return page.locator('#command-ribbon').evaluate((ribbon) => {
       const toolbar = ribbon.querySelector('.command-tools[role="toolbar"]');
