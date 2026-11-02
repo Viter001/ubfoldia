@@ -9,7 +9,8 @@ import {
   flowColumnRange,
   levelForX,
   snapXToColumn,
-  snapYToNearbyCard,
+  resolveVerticalCollisions,
+  snapYToAdjacentCard,
   xForColumnIndex,
 } from '../src/ui/flow-layout.ts';
 
@@ -118,32 +119,47 @@ test('missing viewport metrics fall back to node columns safely', () => {
   assert.deepEqual({ start: empty.start, end: empty.end }, { start: 0, end: 0 });
 });
 
-test('vertical snapping uses a narrow same-column threshold and nearest card', () => {
+test('vertical snapping targets the gap above or below a same-column card', () => {
   const cards = [
-    { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 100 } },
-    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X + 20, y: 160 } },
-    { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 500 } },
+    { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 100 }, height: 200 },
+    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X + 20, y: 160 }, height: 200 },
+    { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 500 }, height: 200 },
   ];
-  assert.equal(snapYToNearbyCard(110, FLOW_COLUMN_ORIGIN_X, cards), 100);
-  assert.equal(snapYToNearbyCard(130, FLOW_COLUMN_ORIGIN_X, cards), 130);
+  assert.equal(snapYToAdjacentCard(300, FLOW_COLUMN_ORIGIN_X, 200, cards), 308);
+  assert.equal(snapYToAdjacentCard(260, FLOW_COLUMN_ORIGIN_X, 200, cards), 260);
   assert.equal(
-    snapYToNearbyCard(145, FLOW_COLUMN_ORIGIN_X, cards),
-    160,
-    'nearest same-column card is used',
+    snapYToAdjacentCard(360, FLOW_COLUMN_ORIGIN_X, 200, cards),
+    368,
+    'nearest same-column gap is used',
   );
   assert.equal(
-    snapYToNearbyCard(500, FLOW_COLUMN_ORIGIN_X, cards),
+    snapYToAdjacentCard(500, FLOW_COLUMN_ORIGIN_X, 200, cards),
     500,
     'other columns do not snap',
   );
   assert.equal(
-    snapYToNearbyCard(110, FLOW_COLUMN_ORIGIN_X, cards, new Set(['a'])),
-    110,
+    snapYToAdjacentCard(300, FLOW_COLUMN_ORIGIN_X, 200, cards, new Set(['a'])),
+    300,
     'excluded cards are ignored',
   );
   assert.equal(
-    snapYToNearbyCard(100 + FLOW_VERTICAL_SNAP_DISTANCE + 1, FLOW_COLUMN_ORIGIN_X, cards),
-    100 + FLOW_VERTICAL_SNAP_DISTANCE + 1,
+    snapYToAdjacentCard(260, FLOW_COLUMN_ORIGIN_X, 200, cards),
+    260,
     'threshold is narrow',
   );
+});
+
+test('vertical collision resolution moves a dragged group to the nearest gap', () => {
+  const group = [{ id: 'drag', x: FLOW_COLUMN_ORIGIN_X, y: 250, height: 200 }];
+  const others = [
+    { id: 'above', x: FLOW_COLUMN_ORIGIN_X, y: 100, height: 200 },
+    { id: 'other-column', x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 250, height: 200 },
+  ];
+  assert.equal(resolveVerticalCollisions(group, others), 58);
+  assert.equal(
+    resolveVerticalCollisions([{ id: 'drag', x: FLOW_COLUMN_ORIGIN_X, y: 250, height: 200 }], []),
+    0,
+  );
+  const below = [{ id: 'below', x: FLOW_COLUMN_ORIGIN_X, y: 420, height: 200 }];
+  assert.equal(resolveVerticalCollisions(group, below), -38);
 });

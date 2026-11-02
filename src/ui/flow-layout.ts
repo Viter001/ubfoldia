@@ -51,38 +51,94 @@ export function snapXToColumn(x: number): number {
 }
 
 /** Narrow vertical hit range used when aligning a dragged card to a sibling. */
-export const FLOW_VERTICAL_SNAP_DISTANCE = 24;
+export const FLOW_VERTICAL_SNAP_DISTANCE = 40;
 
 export type FlowSnapCard = {
   id: string;
   position: { x: number; y: number };
+  height?: number;
+};
+
+export type FlowOverlapCard = {
+  id: string;
+  x: number;
+  y: number;
+  height: number;
 };
 
 /**
- * Snap only when the dragged card is already very close to another card in the
- * same level column. A narrow threshold avoids surprising jumps while still
- * letting users align a row of cards by feel.
+ * Snap a dragged card to the empty slot immediately above or below a nearby
+ * card in the same level column. This is an edge-to-edge snap rather than a
+ * same-top alignment, so using it never creates an overlap.
  */
-export function snapYToNearbyCard(
+export function snapYToAdjacentCard(
   y: number,
   x: number,
+  height: number,
   cards: readonly FlowSnapCard[],
   excludedIds: ReadonlySet<string> = new Set(),
   threshold = FLOW_VERTICAL_SNAP_DISTANCE,
+  gap = 8,
 ): number {
-  if (!Number.isFinite(y) || !Number.isFinite(x)) return y;
+  if (!Number.isFinite(y) || !Number.isFinite(x) || !Number.isFinite(height)) return y;
   const column = columnIndexForX(x);
+  const cardHeight = height > 0 ? height : NODE_HEIGHT_FALLBACK;
   let bestDistance = Number.POSITIVE_INFINITY;
   let bestY = y;
   for (const card of cards) {
     if (excludedIds.has(card.id) || columnIndexForX(card.position.x) !== column) continue;
-    const distance = Math.abs(card.position.y - y);
-    if (distance <= threshold && distance < bestDistance) {
-      bestDistance = distance;
-      bestY = card.position.y;
+    const height = card.height && card.height > 0 ? card.height : NODE_HEIGHT_FALLBACK;
+    for (const candidate of [card.position.y + height + gap, card.position.y - cardHeight - gap]) {
+      const distance = Math.abs(candidate - y);
+      if (distance <= threshold && distance < bestDistance) {
+        bestDistance = distance;
+        bestY = candidate;
+      }
     }
   }
   return bestY;
+}
+
+/**
+ * Resolve vertical collisions for a dragged group by moving the whole group
+ * above or below the nearest conflicting card. The group's relative positions
+ * are never changed. This is intentionally conservative: cards in different
+ * level columns can overlap freely unless the caller opts into overlap mode.
+ */
+export function resolveVerticalCollisions(
+  group: readonly FlowOverlapCard[],
+  cards: readonly FlowOverlapCard[],
+  gap = 8,
+): number {
+  let delta = 0;
+  for (let iteration = 0; iteration < 20; iteration++) {
+    const collisions: Array<{ group: FlowOverlapCard; other: FlowOverlapCard }> = [];
+    for (const card of group) {
+      const top = card.y + delta;
+      const bottom = top + card.height;
+      for (const other of cards) {
+        if (columnIndexForX(card.x) !== columnIndexForX(other.x)) continue;
+        if (top < other.y + other.height + gap && bottom + gap > other.y) {
+          collisions.push({ group: card, other });
+        }
+      }
+    }
+    if (!collisions.length) return delta;
+
+    let nearestShift: number | undefined;
+    for (const { group: card, other } of collisions) {
+      const top = card.y + delta;
+      const bottom = top + card.height;
+      for (const shift of [other.y + other.height + gap - top, other.y - gap - bottom]) {
+        if (shift === 0) continue;
+        if (nearestShift === undefined || Math.abs(shift) < Math.abs(nearestShift))
+          nearestShift = shift;
+      }
+    }
+    if (nearestShift === undefined) return delta;
+    delta += nearestShift;
+  }
+  return delta;
 }
 
 /** Human-facing level number (column 0 is level 1). */

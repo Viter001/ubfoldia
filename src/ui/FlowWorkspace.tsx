@@ -26,10 +26,12 @@ import {
 import { rememberViewport, type FlowViewStore } from './flow-view';
 import {
   FLOW_COLUMN_STEP_X,
+  columnIndexForX,
   flowColumnRange,
   levelForX,
+  resolveVerticalCollisions,
   snapXToColumn,
-  snapYToNearbyCard,
+  snapYToAdjacentCard,
   xForColumnIndex,
 } from './flow-layout';
 
@@ -180,6 +182,8 @@ export function FlowWorkspace({
   onAddPage: () => void;
 }) {
   const [nodes, setNodes] = useState<Node<CardData>[]>([]);
+  const [allowOverlap, setAllowOverlap] = useState(false);
+  const [snapGuide, setSnapGuide] = useState<{ x: number; y: number } | null>(null);
   const lastFit = useRef(fitEpoch);
 
   useEffect(() => {
@@ -284,6 +288,31 @@ export function FlowWorkspace({
         }
         onPaneClick={onClearSelection}
         onNodeDoubleClick={(_, n) => onEditPage(n.id)}
+        onNodeDrag={(_, dragged) => {
+          const selected = new Set(
+            selectedPageIds.includes(dragged.id) ? selectedPageIds : [dragged.id],
+          );
+          selected.add(dragged.id);
+          const targetX = snapXToColumn(dragged.position.x);
+          const page = project.pages.find((item) => item.id === dragged.id);
+          const draggedHeight =
+            dragged.measured?.height ??
+            PAGE_CARD_BASE_HEIGHT + (page?.exits.length ?? 0) * PAGE_EXIT_HEIGHT;
+          const otherCards = project.pages
+            .filter((item) => !selected.has(item.id))
+            .map((item) => ({
+              id: item.id,
+              position: item.position,
+              height: PAGE_CARD_BASE_HEIGHT + item.exits.length * PAGE_EXIT_HEIGHT,
+            }));
+          const targetY = snapYToAdjacentCard(
+            dragged.position.y,
+            targetX,
+            draggedHeight,
+            otherCards,
+          );
+          setSnapGuide(targetY === dragged.position.y ? null : { x: targetX, y: targetY });
+        }}
         onNodeDragStop={(_, dragged) => {
           const current = flowRef.current?.getNodes() ?? nodes;
           const draggedNode = current.find((node) => node.id === dragged.id);
@@ -294,11 +323,47 @@ export function FlowWorkspace({
           selected.add(dragged.id);
           const targetX = snapXToColumn(draggedNode.position.x);
           const otherPages = project.pages.filter((page) => !selected.has(page.id));
-          const targetY = snapYToNearbyCard(draggedNode.position.y, targetX, otherPages);
+          const draggedPage = project.pages.find((page) => page.id === draggedNode.id);
+          const draggedHeight =
+            draggedNode.measured?.height ??
+            PAGE_CARD_BASE_HEIGHT + (draggedPage?.exits.length ?? 0) * PAGE_EXIT_HEIGHT;
+          const targetY = snapYToAdjacentCard(
+            draggedNode.position.y,
+            targetX,
+            draggedHeight,
+            otherPages.map((page) => ({
+              id: page.id,
+              position: page.position,
+              height: PAGE_CARD_BASE_HEIGHT + page.exits.length * PAGE_EXIT_HEIGHT,
+            })),
+          );
           const delta = {
             x: targetX - draggedNode.position.x,
             y: targetY - draggedNode.position.y,
           };
+          if (!allowOverlap) {
+            const group = current
+              .filter((node) => selected.has(node.id))
+              .map((node) => {
+                const page = project.pages.find((item) => item.id === node.id);
+                return {
+                  id: node.id,
+                  x: node.position.x + delta.x,
+                  y: node.position.y + delta.y,
+                  height:
+                    node.measured?.height ??
+                    PAGE_CARD_BASE_HEIGHT + (page?.exits.length ?? 0) * PAGE_EXIT_HEIGHT,
+                };
+              });
+            const others = otherPages.map((page) => ({
+              id: page.id,
+              x: page.position.x,
+              y: page.position.y,
+              height: PAGE_CARD_BASE_HEIGHT + page.exits.length * PAGE_EXIT_HEIGHT,
+            }));
+            delta.y += resolveVerticalCollisions(group, others);
+          }
+          setSnapGuide(null);
           const updates: Array<{ pageId: string; position: { x: number; y: number } }> = [];
           const nextPositions = new Map<string, { x: number; y: number }>();
           for (const node of current) {
@@ -335,6 +400,20 @@ export function FlowWorkspace({
         maxZoom={1.5}
       >
         <FlowColumns project={project} />
+        {snapGuide && (
+          <ViewportPortal>
+            <div
+              className="flow-snap-guide"
+              style={{
+                position: 'absolute',
+                left: xForColumnIndex(columnIndexForX(snapGuide.x)),
+                top: snapGuide.y,
+                width: FLOW_COLUMN_STEP_X,
+                zIndex: 3,
+              }}
+            />
+          </ViewportPortal>
+        )}
         <Background gap={24} size={1} />
         <Controls showInteractive={false} />
         <MiniMap
@@ -343,12 +422,20 @@ export function FlowWorkspace({
           position="bottom-right"
           pannable
           zoomable
-          nodeColor={(node) => (node.selected ? '#dfff00' : '#5e7b65')}
-          nodeStrokeColor="#1b291f"
+          nodeColor={(node) => (node.selected ? '#dfff00' : '#9cc3a6')}
+          nodeStrokeColor="#d7e6d2"
           nodeBorderRadius={2}
-          maskColor="rgba(5, 9, 7, 0.72)"
+          maskColor="rgba(2, 4, 3, 0.88)"
         />
       </ReactFlow>
+      <label className="flow-overlap-toggle">
+        <input
+          type="checkbox"
+          checked={allowOverlap}
+          onChange={(event) => setAllowOverlap(event.target.checked)}
+        />
+        允许卡片重叠
+      </label>
       {!project.pages.length && (
         <div className="canvas-empty">
           <h2>第一张页面，故事的起点</h2>

@@ -273,10 +273,10 @@ small {
 }
 .page-card {
   width: 244px;
-  border: 1px solid var(--border);
+  border: 1px solid #4d6353;
   border-radius: 2px;
-  background: var(--panel);
-  box-shadow: none;
+  background: #18221b;
+  box-shadow: 0 2px 12px #0008;
   overflow: visible;
 }
 .page-card.active {
@@ -285,6 +285,8 @@ small {
 }
 .card-heading {
   height: 40px;
+  border-bottom: 1px solid #35483a;
+  background: #1d2920;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -299,7 +301,7 @@ small {
 }
 .card-number {
   font-size: 11px;
-  color: var(--muted);
+  color: #b5c8b7;
 }
 .start-tag {
   font-size: 10px;
@@ -324,13 +326,16 @@ small {
   align-items: center;
   justify-content: space-between;
   padding: 10px;
+  border-top: 1px solid #35483a;
+  background: #141d17;
   font-size: 10px;
 }
 .card-actions button {
   font-size: 11px;
   padding: 6px 8px;
   border: 0;
-  background: var(--raised);
+  background: #293a2c;
+  color: #e4ece2;
 }
 .warning {
   color: var(--warning);
@@ -339,8 +344,8 @@ small {
   position: relative;
   font-size: 11px;
   padding: 10px 15px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
+  border-top: 1px solid #35483a;
+  color: #b8cbb9;
 }
 .react-flow__handle {
   width: 10px;
@@ -1492,10 +1497,10 @@ button:disabled {
 .page-level {
   display: block;
   padding: 5px 13px;
-  color: #a5b79e;
+  color: #c0d1c2;
   font-size: 10px;
   letter-spacing: 0.08em;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #35483a;
 }
 .flow-legend {
   flex-wrap: wrap;
@@ -1528,12 +1533,12 @@ button:disabled {
 .flow-minimap {
   width: 190px;
   height: 132px;
-  border: 1px solid var(--border);
-  background: #0d0f0e;
-  box-shadow: 0 8px 24px #0008;
+  border: 1px solid #708a77;
+  background: #080b09;
+  box-shadow: 0 8px 24px #000c;
 }
 .flow-minimap .react-flow__minimap-mask {
-  fill: #0d0f0ecc;
+  fill: #020403e0;
 }
 .flow-minimap .react-flow__minimap-svg {
   display: block;
@@ -1543,4 +1548,28 @@ button:disabled {
     width: 150px;
     height: 105px;
   }
+}
+
+.flow-snap-guide {
+  height: 0;
+  border-top: 1px dashed #dfff00;
+  box-shadow: 0 0 0 1px #dfff0022;
+  pointer-events: none;
+}
+.flow-overlap-toggle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  color: #d4dfd1;
+  background: #0b100ddd;
+  border: 1px solid #4f6556;
+  font-size: 11px;
+}
+.flow-overlap-toggle input {
+  margin: 0;
 }

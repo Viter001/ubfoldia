@@ -271,7 +271,11 @@ try {
   assert.equal(await page.locator('.flow-legend-note').innerText(), '循环 = 环内前进');
   await screenshot('flow-four-directions.png');
 
-  // 3. Drag across columns: only the dragged page's x changes; edges stay.
+  // 3. Drag across columns. With overlap explicitly allowed, only x changes;
+  //    the default no-overlap mode is exercised by the collision helper tests.
+  const overlapToggle = page.getByLabel('允许卡片重叠', { exact: true });
+  assert.equal(await overlapToggle.isChecked(), false);
+  await overlapToggle.check();
   await page.getByRole('tab', { name: '视图', exact: true }).click();
   await page.getByRole('button', { name: '适应画布', exact: true }).click();
   await page.waitForTimeout(300);
@@ -312,6 +316,8 @@ try {
     '第 ' + (columnOf(movedPage.position.x) + 1) + ' 层',
   );
   await screenshot('flow-drag-snapped.png');
+  await overlapToggle.uncheck();
+  assert.equal(await overlapToggle.isChecked(), false);
 
   // 4. Undo restores the old layout; redo restores the snapped layout.
   const undone = await invoke('undo');
@@ -409,6 +415,7 @@ try {
         cycleNote: '循环 = 环内前进',
         minimap: { present: true, nodes: await page.locator('.react-flow__minimap-node').count() },
         flatColumns: true,
+        overlapControl: { defaultAllowed: false, toggleWorks: true },
         batch: {
           selected: 2,
           background: '#123456',
