@@ -1,0 +1,114 @@
+{
+  "source": "E:/code saving/INTERACTIVE-NARRATIVE-SYSTEM/docs/page-map.html",
+  "sourcePages": 88,
+  "sourceExits": 95,
+  "endingPages": [
+    "p089"
+  ],
+  "multiExitPages": [
+    {
+      "id": "p007",
+      "exits": [
+        {
+          "to": "p009",
+          "label": "写校歌"
+        },
+        {
+          "to": "p019",
+          "label": "写校训"
+        },
+        {
+          "to": "p029",
+          "label": "打扫校园"
+        }
+      ]
+    },
+    {
+      "id": "p010",
+      "exits": [
+        {
+          "to": "p011",
+          "label": "写校训"
+        },
+        {
+          "to": "p015",
+          "label": "打扫校园"
+        }
+      ]
+    },
+    {
+      "id": "p020",
+      "exits": [
+        {
+          "to": "p021",
+          "label": "写校歌"
+        },
+        {
+          "to": "p025",
+          "label": "打扫校园"
+        }
+      ]
+    },
+    {
+      "id": "p030",
+      "exits": [
+        {
+          "to": "p031",
+          "label": "写校歌"
+        },
+        {
+          "to": "p035",
+          "label": "写校训"
+        }
+      ]
+    },
+    {
+      "id": "p039",
+      "exits": [
+        {
+          "to": "p040",
+          "label": "在墙壁上写抗战口号"
+        },
+        {
+          "to": "p050",
+          "label": "上街演话剧"
+        }
+      ]
+    },
+    {
+      "id": "p063",
+      "exits": [
+        {
+          "to": "p064",
+          "label": "解决冤案"
+        },
+        {
+          "to": "p065",
+          "label": "废除苛捐杂税"
+        }
+      ]
+    },
+    {
+      "id": "p066",
+      "exits": [
+        {
+          "to": "p067",
+          "label": "登门请求他"
+        },
+        {
+          "to": "p069",
+          "label": "与他公开论战"
+        }
+      ]
+    }
+  ],
+  "retryLoop": [
+    "p066",
+    "p067",
+    "p068",
+    "p066"
+  ],
+  "levels": 51,
+  "maxNodesPerLevel": 6,
+  "layout": "x = topological level, y = branch row"
+}

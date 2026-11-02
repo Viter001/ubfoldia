@@ -41,6 +41,10 @@ npm run package
 - `npm run test:agent`：调用本机已登录的真实 Codex CLI，仅操作临时测试工程；会使用模型额度，不是普通单元测试。
 - `node scripts/ui-acceptance.mjs`、`playback-acceptance.mjs`、`flush-acceptance.mjs`：完整制作、音画生命周期/异常、未失焦输入保存回归。
 
+## 复杂流程验证样本
+
+`examples/林基路在新疆-流程复刻/project.json` 是 88 个页面、95 条出口、7 个选择页、1 个结局和 1 个重试环的最小流程复刻，不包含原项目素材与页面正文。用于检验大流程下的层级列、四类连线、拖动吸附与工具区收起；打开后需要平移画布查看全部层级。
+
 ## Agent 接入
 
 不内置聊天或模型。见 [外部 Agent 工具说明](docs/agent-tools.md)。先在桌面工具打开工程，按需授权素材目录，再让外部宿主连接本地 MCP bridge。

@@ -1,0 +1,2070 @@
+{
+  "schemaVersion": 1,
+  "id": "reference-flow-lin-jilu",
+  "name": "林基路在新疆 · 流程复刻",
+  "revision": 0,
+  "width": 1280,
+  "height": 720,
+  "startPageId": "p001",
+  "pages": [
+    {
+      "id": "p001",
+      "name": "p001 · 主线 · 林基路的热血岁月",
+      "position": {
+        "x": 80,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p001-exit-1",
+          "label": "继续",
+          "target": "p002"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p002",
+      "name": "p002 · 主线 · 特绘此书， 深切缅怀革命英…",
+      "position": {
+        "x": 440,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p002-exit-1",
+          "label": "继续",
+          "target": "p003"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p003",
+      "name": "p003 · 主线 · 1938年，春，我带着延安…",
+      "position": {
+        "x": 800,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p003-exit-1",
+          "label": "继续",
+          "target": "p004"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p004",
+      "name": "p004 · 主线 · 初入校园，学生们玩得不亦乐…",
+      "position": {
+        "x": 1160,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p004-exit-1",
+          "label": "继续",
+          "target": "p005"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p005",
+      "name": "p005 · 主线 · 突然，一阵隐约的讨论声飘来…",
+      "position": {
+        "x": 1520,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p005-exit-1",
+          "label": "继续",
+          "target": "p006"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p006",
+      "name": "p006 · 主线 · 我讲起了延安学子们高涨的学…",
+      "position": {
+        "x": 1880,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p006-exit-1",
+          "label": "继续",
+          "target": "p007"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p007",
+      "name": "p007 · 选择 · 学生们的眼中泛起了向往的涟…",
+      "position": {
+        "x": 2240,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p007-exit-1",
+          "label": "写校歌",
+          "target": "p009"
+        },
+        {
+          "id": "p007-exit-2",
+          "label": "写校训",
+          "target": "p019"
+        },
+        {
+          "id": "p007-exit-3",
+          "label": "打扫校园",
+          "target": "p029"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p009",
+      "name": "p009 · 分支 · 我想要为新疆学院的孩子们写…",
+      "position": {
+        "x": 2600,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p009-exit-1",
+          "label": "继续",
+          "target": "p010"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p010",
+      "name": "p010 · 选择 · 不久后，这首由我作词、由师…",
+      "position": {
+        "x": 2960,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p010-exit-1",
+          "label": "写校训",
+          "target": "p011"
+        },
+        {
+          "id": "p010-exit-2",
+          "label": "打扫校园",
+          "target": "p015"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p011",
+      "name": "p011 · 分支 · 校训也要好好琢磨，既要贴合…",
+      "position": {
+        "x": 3320,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p011-exit-1",
+          "label": "继续",
+          "target": "p012"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p012",
+      "name": "p012 · 分支 · 于是，我针对许多学生有浮华…",
+      "position": {
+        "x": 3680,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p012-exit-1",
+          "label": "继续",
+          "target": "p013"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p013",
+      "name": "p013 · 分支 · 整顿好校风后，我带着学生们…",
+      "position": {
+        "x": 4040,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p013-exit-1",
+          "label": "继续",
+          "target": "p014"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p014",
+      "name": "p014 · 分支 · 迪化冬天的一场雪，把校园盖…",
+      "position": {
+        "x": 4400,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p014-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p015",
+      "name": "p015 · 分支 · 为了创造良好的学习环境，我…",
+      "position": {
+        "x": 3320,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p015-exit-1",
+          "label": "继续",
+          "target": "p016"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p016",
+      "name": "p016 · 分支 · 迪化冬天的一场雪，把校园盖…",
+      "position": {
+        "x": 3680,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p016-exit-1",
+          "label": "继续",
+          "target": "p017"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p017",
+      "name": "p017 · 分支 · 我还想要为青年们写下校训，…",
+      "position": {
+        "x": 4040,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p017-exit-1",
+          "label": "继续",
+          "target": "p018"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p018",
+      "name": "p018 · 分支 · 于是，我针对许多学生有浮华…",
+      "position": {
+        "x": 4400,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p018-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p019",
+      "name": "p019 · 分支 · 要改造学院，第一件事，便是…",
+      "position": {
+        "x": 2600,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p019-exit-1",
+          "label": "继续",
+          "target": "p020"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p020",
+      "name": "p020 · 选择 · 于是，我针对许多学生有浮华…",
+      "position": {
+        "x": 2960,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p020-exit-1",
+          "label": "写校歌",
+          "target": "p021"
+        },
+        {
+          "id": "p020-exit-2",
+          "label": "打扫校园",
+          "target": "p025"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p021",
+      "name": "p021 · 分支 · 我想要为新疆学院的孩子们写…",
+      "position": {
+        "x": 3320,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p021-exit-1",
+          "label": "继续",
+          "target": "p022"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p022",
+      "name": "p022 · 分支 · 不久后，这首由我作词、由师…",
+      "position": {
+        "x": 3680,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p022-exit-1",
+          "label": "继续",
+          "target": "p023"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p023",
+      "name": "p023 · 分支 · 整顿好校风后，我带着学生们…",
+      "position": {
+        "x": 4040,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p023-exit-1",
+          "label": "继续",
+          "target": "p024"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p024",
+      "name": "p024 · 分支 · 迪化冬天的一场雪，把校园盖…",
+      "position": {
+        "x": 4400,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p024-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p025",
+      "name": "p025 · 分支 · 为了创造良好的学习环境，我…",
+      "position": {
+        "x": 3320,
+        "y": 890
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p025-exit-1",
+          "label": "继续",
+          "target": "p026"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p026",
+      "name": "p026 · 分支 · 迪化冬天的一场雪，把校园盖…",
+      "position": {
+        "x": 3680,
+        "y": 890
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p026-exit-1",
+          "label": "继续",
+          "target": "p027"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p027",
+      "name": "p027 · 分支 · 我还想要为新疆学院的孩子们…",
+      "position": {
+        "x": 4040,
+        "y": 890
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p027-exit-1",
+          "label": "继续",
+          "target": "p028"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p028",
+      "name": "p028 · 分支 · 不久后，这首由我作词、由师…",
+      "position": {
+        "x": 4400,
+        "y": 890
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p028-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p029",
+      "name": "p029 · 分支 · 为了创造良好的学习环境，我…",
+      "position": {
+        "x": 2600,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p029-exit-1",
+          "label": "继续",
+          "target": "p030"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p030",
+      "name": "p030 · 选择 · 迪化冬天的一场雪，把校园盖…",
+      "position": {
+        "x": 2960,
+        "y": 620
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p030-exit-1",
+          "label": "写校歌",
+          "target": "p031"
+        },
+        {
+          "id": "p030-exit-2",
+          "label": "写校训",
+          "target": "p035"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p031",
+      "name": "p031 · 分支 · 除了整顿校容，我还想要为新…",
+      "position": {
+        "x": 3320,
+        "y": 1160
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p031-exit-1",
+          "label": "继续",
+          "target": "p032"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p032",
+      "name": "p032 · 分支 · 不久后，这首由我作词、由师…",
+      "position": {
+        "x": 3680,
+        "y": 1160
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p032-exit-1",
+          "label": "继续",
+          "target": "p033"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p033",
+      "name": "p033 · 分支 · 校训也要好好琢磨，既要贴合…",
+      "position": {
+        "x": 4040,
+        "y": 1160
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p033-exit-1",
+          "label": "继续",
+          "target": "p034"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p034",
+      "name": "p034 · 分支 · 于是，我针对许多学生有浮华…",
+      "position": {
+        "x": 4400,
+        "y": 1160
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p034-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p035",
+      "name": "p035 · 分支 · 除了整顿校容，我还想要为青…",
+      "position": {
+        "x": 3320,
+        "y": 1430
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p035-exit-1",
+          "label": "继续",
+          "target": "p036"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p036",
+      "name": "p036 · 分支 · 于是，我针对许多学生有浮华…",
+      "position": {
+        "x": 3680,
+        "y": 1430
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p036-exit-1",
+          "label": "继续",
+          "target": "p037"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p037",
+      "name": "p037 · 分支 · 同时，我还想要为新疆学院的…",
+      "position": {
+        "x": 4040,
+        "y": 1430
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p037-exit-1",
+          "label": "继续",
+          "target": "p038"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p038",
+      "name": "p038 · 分支 · 不久后，这首由我作词、由师…",
+      "position": {
+        "x": 4400,
+        "y": 1430
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p038-exit-1",
+          "label": "继续",
+          "target": "p039"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p039",
+      "name": "p039 · 选择 · 日子一天天过去，学生们开始…",
+      "position": {
+        "x": 4760,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p039-exit-1",
+          "label": "在墙壁上写抗战口号",
+          "target": "p040"
+        },
+        {
+          "id": "p039-exit-2",
+          "label": "上街演话剧",
+          "target": "p050"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p040",
+      "name": "p040 · 分支 · 我带领学生们在校园的墙壁上…",
+      "position": {
+        "x": 5120,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p040-exit-1",
+          "label": "继续",
+          "target": "p041"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p041",
+      "name": "p041 · 分支 · 在我们的共同努力下，校园墙…",
+      "position": {
+        "x": 5480,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p041-exit-1",
+          "label": "继续",
+          "target": "p042"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p042",
+      "name": "p042 · 分支 · 打倒日本帝国主义",
+      "position": {
+        "x": 5840,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p042-exit-1",
+          "label": "继续",
+          "target": "p043"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p043",
+      "name": "p043 · 分支 · 坚持抗战，反对投降",
+      "position": {
+        "x": 6200,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p043-exit-1",
+          "label": "继续",
+          "target": "p044"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p044",
+      "name": "p044 · 分支 · 为了动员更多同胞支援抗日，…",
+      "position": {
+        "x": 6560,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p044-exit-1",
+          "label": "继续",
+          "target": "p045"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p045",
+      "name": "p045 · 分支 · 我趁机向大家喊道：这样的苦…",
+      "position": {
+        "x": 6920,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p045-exit-1",
+          "label": "继续",
+          "target": "p046"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p046",
+      "name": "p046 · 分支 · 我是打铁的，我要给八路军打…",
+      "position": {
+        "x": 7280,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p046-exit-1",
+          "label": "继续",
+          "target": "p047"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p047",
+      "name": "p047 · 分支 · 这是我们积攒的一点钱，我们…",
+      "position": {
+        "x": 7640,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p047-exit-1",
+          "label": "继续",
+          "target": "p048"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p048",
+      "name": "p048 · 分支 · 有了他们带头，大家都行动起…",
+      "position": {
+        "x": 8000,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p048-exit-1",
+          "label": "继续",
+          "target": "p049"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p049",
+      "name": "p049 · 分支 · 人们排起长队，捐出了银元、…",
+      "position": {
+        "x": 8360,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p049-exit-1",
+          "label": "继续",
+          "target": "p060"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p050",
+      "name": "p050 · 分支 · 我带着学生们排演了话剧《放…",
+      "position": {
+        "x": 5120,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p050-exit-1",
+          "label": "继续",
+          "target": "p051"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p051",
+      "name": "p051 · 分支 · 我趁机向大家喊道：这样的苦…",
+      "position": {
+        "x": 5480,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p051-exit-1",
+          "label": "继续",
+          "target": "p052"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p052",
+      "name": "p052 · 分支 · 我是打铁的，我要给八路军打…",
+      "position": {
+        "x": 5840,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p052-exit-1",
+          "label": "继续",
+          "target": "p053"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p053",
+      "name": "p053 · 分支 · 这是我们积攒的一点钱，我们…",
+      "position": {
+        "x": 6200,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p053-exit-1",
+          "label": "继续",
+          "target": "p054"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p054",
+      "name": "p054 · 分支 · 有了他们带头，大家都行动起…",
+      "position": {
+        "x": 6560,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p054-exit-1",
+          "label": "继续",
+          "target": "p055"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p055",
+      "name": "p055 · 分支 · 除了发动学生走到群众中宣传…",
+      "position": {
+        "x": 6920,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p055-exit-1",
+          "label": "继续",
+          "target": "p056"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p056",
+      "name": "p056 · 分支 · 在我们的共同努力下，校园墙…",
+      "position": {
+        "x": 7280,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p056-exit-1",
+          "label": "继续",
+          "target": "p057"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p057",
+      "name": "p057 · 分支 · 打倒日本帝国主义",
+      "position": {
+        "x": 7640,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p057-exit-1",
+          "label": "继续",
+          "target": "p058"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p058",
+      "name": "p058 · 分支 · 坚持抗战，反对投降",
+      "position": {
+        "x": 8000,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p058-exit-1",
+          "label": "继续",
+          "target": "p059"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p059",
+      "name": "p059 · 分支 · 看着墙壁上墨迹未干的标语，…",
+      "position": {
+        "x": 8360,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p059-exit-1",
+          "label": "继续",
+          "target": "p060"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p060",
+      "name": "p060 · 主线 · 可是一心想割据称王的盛世才…",
+      "position": {
+        "x": 8720,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p060-exit-1",
+          "label": "继续",
+          "target": "p061"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p061",
+      "name": "p061 · 主线 · 临行那天，学生们冒雪赶来送…",
+      "position": {
+        "x": 9080,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p061-exit-1",
+          "label": "继续",
+          "target": "p062"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p062",
+      "name": "p062 · 主线 · 去往南疆的路上，我不时取出…",
+      "position": {
+        "x": 9440,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p062-exit-1",
+          "label": "继续",
+          "target": "p063"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p063",
+      "name": "p063 · 选择 · 来到南疆库车县，我担任县长…",
+      "position": {
+        "x": 9800,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p063-exit-1",
+          "label": "解决冤案",
+          "target": "p064"
+        },
+        {
+          "id": "p063-exit-2",
+          "label": "废除苛捐杂税",
+          "target": "p065"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p064",
+      "name": "p064 · 分支 · 我着手处理百姓上告的案子，…",
+      "position": {
+        "x": 10160,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p064-exit-1",
+          "label": "继续",
+          "target": "p066"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p065",
+      "name": "p065 · 分支 · 赋税沉重，我便下令废除苛捐…",
+      "position": {
+        "x": 10160,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p065-exit-1",
+          "label": "继续",
+          "target": "p066"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p066",
+      "name": "p066 · 选择 · 处理好库车县的政务后，我把…",
+      "position": {
+        "x": 10520,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p066-exit-1",
+          "label": "登门请求他",
+          "target": "p067"
+        },
+        {
+          "id": "p066-exit-2",
+          "label": "与他公开论战",
+          "target": "p069"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#1b190e"
+    },
+    {
+      "id": "p067",
+      "name": "p067 · 分支 · 我试图与瓦哈甫洽谈，可他总…",
+      "position": {
+        "x": 10880,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p067-exit-1",
+          "label": "继续",
+          "target": "p068"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p068",
+      "name": "p068 · 分支 · 经费还没有着落，需要另想办…",
+      "position": {
+        "x": 11240,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p068-exit-1",
+          "label": "继续",
+          "target": "p066"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#131a20"
+    },
+    {
+      "id": "p069",
+      "name": "p069 · 主线 · 我带着师生们敲锣打鼓来到工…",
+      "position": {
+        "x": 10880,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p069-exit-1",
+          "label": "继续",
+          "target": "p070"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p070",
+      "name": "p070 · 主线 · 拿到了资金，在大家的共同努…",
+      "position": {
+        "x": 11240,
+        "y": 350
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p070-exit-1",
+          "label": "继续",
+          "target": "p071"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p071",
+      "name": "p071 · 主线 · 黄昏时分，我常常看见一家人…",
+      "position": {
+        "x": 11600,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p071-exit-1",
+          "label": "继续",
+          "target": "p072"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p072",
+      "name": "p072 · 主线 · 我带着人勘察河道、翻阅水文…",
+      "position": {
+        "x": 11960,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p072-exit-1",
+          "label": "继续",
+          "target": "p073"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p073",
+      "name": "p073 · 主线 · 工程一启动，库车的百姓就自…",
+      "position": {
+        "x": 12320,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p073-exit-1",
+          "label": "继续",
+          "target": "p074"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p074",
+      "name": "p074 · 主线 · 在各族百姓的齐心协力下，长…",
+      "position": {
+        "x": 12680,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p074-exit-1",
+          "label": "继续",
+          "target": "p075"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p075",
+      "name": "p075 · 主线 · 随着一项项工程完成，旱涝灾…",
+      "position": {
+        "x": 13040,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p075-exit-1",
+          "label": "继续",
+          "target": "p076"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p076",
+      "name": "p076 · 主线 · 人们捧着饱满的谷子，脸上的…",
+      "position": {
+        "x": 13400,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p076-exit-1",
+          "label": "继续",
+          "target": "p077"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p077",
+      "name": "p077 · 主线 · 库车在不断向好发展，但是没…",
+      "position": {
+        "x": 13760,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p077-exit-1",
+          "label": "继续",
+          "target": "p078"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p078",
+      "name": "p078 · 主线 · 1942年1月，我又接到调…",
+      "position": {
+        "x": 14120,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p078-exit-1",
+          "label": "继续",
+          "target": "p079"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p079",
+      "name": "p079 · 主线 · 1942年5月，我被免职调…",
+      "position": {
+        "x": 14480,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p079-exit-1",
+          "label": "继续",
+          "target": "p080"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p080",
+      "name": "p080 · 主线 · 我坚信，共产主义信仰的光芒…",
+      "position": {
+        "x": 14840,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p080-exit-1",
+          "label": "继续",
+          "target": "p087"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p081",
+      "name": "p081 · 主线 · 我看见了新疆学院的孩子们自…",
+      "position": {
+        "x": 15560,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p081-exit-1",
+          "label": "继续",
+          "target": "p082"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p082",
+      "name": "p082 · 主线 · 看见了库车的人们欢声笑语，…",
+      "position": {
+        "x": 15920,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p082-exit-1",
+          "label": "继续",
+          "target": "p083"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p083",
+      "name": "p083 · 主线 · 如今，库车县的百姓为了纪念…",
+      "position": {
+        "x": 16280,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p083-exit-1",
+          "label": "继续",
+          "target": "p084"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p084",
+      "name": "p084 · 主线 · 又是一年秋，金黄的落叶铺满…",
+      "position": {
+        "x": 16640,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p084-exit-1",
+          "label": "继续",
+          "target": "p085"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p085",
+      "name": "p085 · 主线 · 1985年，林基路的诗作《…",
+      "position": {
+        "x": 17000,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p085-exit-1",
+          "label": "继续",
+          "target": "p086"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p086",
+      "name": "p086 · 主线 · 他的精神， 永远闪耀在这片…",
+      "position": {
+        "x": 17360,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p086-exit-1",
+          "label": "观看结尾视频",
+          "target": "p088"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p087",
+      "name": "p087 · 主线 · 1943年9月27日的深夜…",
+      "position": {
+        "x": 15200,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p087-exit-1",
+          "label": "继续",
+          "target": "p081"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p088",
+      "name": "p088 · 主线 · 结尾视频",
+      "position": {
+        "x": 17720,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [
+        {
+          "id": "p088-exit-1",
+          "label": "继续 · 结束页",
+          "target": "p089"
+        }
+      ],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#0f1713"
+    },
+    {
+      "id": "p089",
+      "name": "p089 · 结局 · 天地英雄气，千秋尚凛然。",
+      "position": {
+        "x": 18080,
+        "y": 80
+      },
+      "layers": [],
+      "exits": [],
+      "music": null,
+      "voice": null,
+      "transition": {
+        "type": "none",
+        "duration": 0.5
+      },
+      "background": "#101b13"
+    }
+  ],
+  "assets": []
+}
