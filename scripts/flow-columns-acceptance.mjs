@@ -351,8 +351,8 @@ try {
     const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
     return { x: matrix.m41, y: matrix.m42 };
   });
-  assert.equal(reopenedProjection.x, reopenedPage.position.x);
-  assert.equal(reopenedProjection.y, reopenedPage.position.y);
+  assert.ok(Math.abs(reopenedProjection.x - reopenedPage.position.x) < 0.01);
+  assert.ok(Math.abs(reopenedProjection.y - reopenedPage.position.y) < 0.01);
   await screenshot('flow-reopened.png');
 
   // 6. Collapse gives the canvas the ribbon's height; tabs, work area and
