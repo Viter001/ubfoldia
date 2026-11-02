@@ -23,10 +23,13 @@ const app = await electron.launch({
   env,
 });
 const themes = [
+  { id: 'tui-lime', name: 'TUI 酸黄', file: 'theme-tui-lime.png' },
   { id: 'claude-paper', name: 'Claude 暖纸', file: 'theme-claude-paper.png' },
   { id: 'claude-night', name: 'Claude 夜墨', file: 'theme-claude-night.png' },
   { id: 'tui-ice', name: 'TUI 冰蓝', file: 'theme-tui-ice.png' },
   { id: 'nord', name: 'Nord 冷夜', file: 'theme-nord.png' },
+  { id: 'tokyo-night', name: 'Tokyo Night 蓝紫', file: 'theme-tokyo-night.png' },
+  { id: 'rose-pine', name: 'Rosé Pine 暮紫', file: 'theme-rose-pine.png' },
   { id: 'tui-amber', name: 'TUI 琥珀', file: 'theme-tui-amber.png' },
 ];
 async function shot(name) {
@@ -51,14 +54,19 @@ try {
   assert.ok(page, 'main window loaded');
   page.setDefaultTimeout(15000);
   await page.getByText('流程工作区', { exact: true }).waitFor();
-  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'tui-amber');
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'tui-lime');
   const settings = page.getByRole('button', { name: '设置', exact: true });
   await settings.click();
-  await page.getByRole('dialog', { name: '设置' }).waitFor();
-  assert.equal(await page.locator('.theme-option').count(), 5);
+  const dialog = page.getByRole('dialog', { name: '设置' });
+  await dialog.waitFor();
+  assert.equal(await page.locator('.theme-option').count(), 8);
+  assert.equal(await dialog.getByRole('tab').count(), 5);
+  await dialog.getByRole('tab', { name: /编辑/ }).click();
+  await dialog.getByRole('heading', { name: '编辑设置' }).waitFor();
+  await dialog.getByRole('tab', { name: /外观/ }).click();
   await page.waitForTimeout(350);
   await shot('theme-menu.png');
-  await settings.click();
+  await page.getByRole('button', { name: '关闭设置' }).click();
 
   for (const theme of themes) {
     await settings.click();
@@ -86,7 +94,7 @@ try {
   await page.reload();
   await page.getByText('流程工作区', { exact: true }).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'claude-paper');
-  console.log('PASS theme menu, live switching, five palettes, persistence');
+  console.log('PASS settings shell, eight palettes, live switching, persistence');
   console.log(run);
 } finally {
   await app.evaluate(({ app }) => app.exit(0)).catch(() => {});

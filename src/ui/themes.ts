@@ -1,4 +1,12 @@
-export type ThemeId = 'tui-amber' | 'claude-paper' | 'claude-night' | 'tui-ice' | 'nord';
+export type ThemeId =
+  | 'tui-lime'
+  | 'tui-amber'
+  | 'claude-paper'
+  | 'claude-night'
+  | 'tui-ice'
+  | 'nord'
+  | 'tokyo-night'
+  | 'rose-pine';
 
 export type ThemeOption = {
   id: ThemeId;
@@ -10,6 +18,14 @@ export type ThemeOption = {
 };
 
 export const THEMES: readonly ThemeOption[] = [
+  {
+    id: 'tui-lime',
+    name: 'TUI 酸黄',
+    description: '中性炭黑、酸黄绿主色，保留旧版最醒目的按钮与选中色',
+    mode: 'dark',
+    swatches: ['#0b0d0e', '#e8e2d1', '#dfff00', '#55d6be'],
+    native: { background: '#0b0d0e', overlay: '#0b0d0e', symbol: '#e8e2d1' },
+  },
   {
     id: 'tui-amber',
     name: 'TUI 琥珀',
@@ -50,9 +66,25 @@ export const THEMES: readonly ThemeOption[] = [
     swatches: ['#2e3440', '#eceff4', '#88c0d0', '#a3be8c'],
     native: { background: '#2e3440', overlay: '#2e3440', symbol: '#eceff4' },
   },
+  {
+    id: 'tokyo-night',
+    name: 'Tokyo Night 蓝紫',
+    description: '深靛蓝底、蓝紫主色，夜间编辑不发绿',
+    mode: 'dark',
+    swatches: ['#1a1b26', '#c0caf5', '#7aa2f7', '#bb9af7'],
+    native: { background: '#1a1b26', overlay: '#1a1b26', symbol: '#c0caf5' },
+  },
+  {
+    id: 'rose-pine',
+    name: 'Rosé Pine 暮紫',
+    description: '暗紫底、灰粉与雾蓝，柔和低饱和',
+    mode: 'dark',
+    swatches: ['#191724', '#e0def4', '#ebbcba', '#9ccfd8'],
+    native: { background: '#191724', overlay: '#191724', symbol: '#e0def4' },
+  },
 ];
 
-export const DEFAULT_THEME: ThemeId = 'tui-amber';
+export const DEFAULT_THEME: ThemeId = 'tui-lime';
 export const THEME_STORAGE_KEY = 'ubfoldia.theme';
 
 export function isThemeId(value: unknown): value is ThemeId {
