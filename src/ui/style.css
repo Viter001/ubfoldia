@@ -432,6 +432,14 @@ small {
   flex: 1;
   min-height: 0;
 }
+.flow-layout {
+  user-select: none;
+}
+.flow-layout input,
+.flow-layout textarea,
+.flow-layout select {
+  user-select: text;
+}
 .flow-canvas {
   position: relative;
   flex: 1;
@@ -2350,8 +2358,14 @@ button:disabled {
 }
 
 .flow-minimap .react-flow__minimap-mask {
+  /* Keep the current viewport frame prominent without hiding nodes outside
+     it; users need the minimap to read the whole story graph. */
+  fill-opacity: 0.38;
   stroke: var(--accent);
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
   filter: drop-shadow(0 0 2px var(--accent-soft));
+}
+.flow-minimap .react-flow__minimap-node {
+  opacity: 1;
 }

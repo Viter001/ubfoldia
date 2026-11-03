@@ -47,6 +47,7 @@ function ribbon(
       onShowFlow: noop,
       onShowPage: noop,
       onFit: noop,
+      onArrange: noop,
       defaultCollapsed,
     }),
   );
@@ -114,6 +115,13 @@ test('the ribbon keeps tab ids, group labels and the original file controls', ()
 
   const file = ribbon('文件');
   for (const name of ['新建', '打开', '保存']) assert.ok(file.includes(name), name);
+});
+
+test('view ribbon exposes one-click arrange and fit without adding a duplicate tab', () => {
+  const html = ribbon('视图');
+  assert.match(html, /<button type="button">整理排序<\/button>/);
+  assert.match(html, /<button type="button">适应画布<\/button>/);
+  assert.equal((html.match(/role="tab"/g) ?? []).length, 6);
 });
 
 test('preview groups are gone from 开始/转场/动画 while their edit controls remain', () => {

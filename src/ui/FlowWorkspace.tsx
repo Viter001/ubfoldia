@@ -6,6 +6,7 @@ import {
   Handle,
   MiniMap,
   Position,
+  SelectionMode,
   ViewportPortal,
   applyNodeChanges,
   useStore,
@@ -25,7 +26,10 @@ import {
 } from './edge-direction';
 import { rememberViewport, type FlowViewStore } from './flow-view';
 import {
+  FLOW_ARRANGE_GAP,
+  FLOW_ARRANGE_START_Y,
   FLOW_COLUMN_STEP_X,
+  arrangeFlowCards,
   columnIndexForX,
   flowColumnRange,
   levelForX,
@@ -175,7 +179,9 @@ export function FlowWorkspace({
   view,
   flowRef,
   fitEpoch,
+  arrangeEpoch,
   onSelectPage,
+  onSelectPages,
   onClearSelection,
   onEditPage,
   onSelectEdge,
@@ -191,7 +197,9 @@ export function FlowWorkspace({
   view: FlowViewStore;
   flowRef: { current: FlowInstance | null };
   fitEpoch: number;
+  arrangeEpoch: number;
   onSelectPage: (pageId: string, additive?: boolean) => void;
+  onSelectPages: (pageIds: string[]) => void;
   onClearSelection: () => void;
   onEditPage: (pageId: string) => void;
   onSelectEdge: (edgeId: string, pageId: string) => void;
@@ -203,6 +211,7 @@ export function FlowWorkspace({
   const [allowOverlap, setAllowOverlap] = useState(false);
   const [snapGuide, setSnapGuide] = useState<{ x: number; y: number } | null>(null);
   const lastFit = useRef(fitEpoch);
+  const lastArrange = useRef(arrangeEpoch);
 
   useEffect(() => {
     const warnings = issues(project);
@@ -274,6 +283,45 @@ export function FlowWorkspace({
     fitFlow();
   }, [fitEpoch]);
 
+  useEffect(() => {
+    if (arrangeEpoch === lastArrange.current) return;
+    lastArrange.current = arrangeEpoch;
+    const current = flowRef.current?.getNodes();
+    if (!current?.length) return;
+    const heightFor = (id: string) => {
+      const node = current.find((item) => item.id === id);
+      const page = project.pages.find((item) => item.id === id);
+      return (
+        node?.measured?.height ??
+        PAGE_CARD_BASE_HEIGHT + (page?.exits.length ?? 0) * PAGE_EXIT_HEIGHT
+      );
+    };
+    const arranged = arrangeFlowCards(
+      current.map((node) => ({
+        id: node.id,
+        position: node.position,
+        height: heightFor(node.id),
+      })),
+      FLOW_ARRANGE_START_Y,
+      FLOW_ARRANGE_GAP,
+    );
+    const positions = new Map(arranged.map((item) => [item.id, item.position]));
+    const updates = arranged.flatMap((item) => {
+      const stored = project.pages.find((page) => page.id === item.id)?.position;
+      return !stored || stored.x !== item.position.x || stored.y !== item.position.y
+        ? [{ pageId: item.id, position: item.position }]
+        : [];
+    });
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => {
+        const position = positions.get(node.id);
+        return position ? { ...node, position } : node;
+      }),
+    );
+    if (updates.length) onMovePages(updates);
+    window.setTimeout(fitFlow, 100);
+  }, [arrangeEpoch]);
+
   useEffect(
     () => () => {
       flowRef.current = null;
@@ -304,6 +352,15 @@ export function FlowWorkspace({
         onNodeClick={(event, n) =>
           onSelectPage(n.id, event.shiftKey || event.ctrlKey || event.metaKey)
         }
+        onSelectionEnd={() => {
+          const selected = flowRef.current
+            ?.getNodes()
+            .filter((node) => node.selected)
+            .map((node) => node.id);
+          if (selected) onSelectPages(selected);
+        }}
+        selectionMode={SelectionMode.Partial}
+        multiSelectionKeyCode={['Shift', 'Control', 'Meta']}
         onPaneClick={onClearSelection}
         onNodeDoubleClick={(_, n) => onEditPage(n.id)}
         onNodeDrag={(_, dragged) => {
@@ -313,15 +370,20 @@ export function FlowWorkspace({
           selected.add(dragged.id);
           const targetX = snapXToColumn(dragged.position.x);
           const page = project.pages.find((item) => item.id === dragged.id);
+          const currentNodes = flowRef.current?.getNodes() ?? nodes;
           const draggedHeight =
             dragged.measured?.height ??
             PAGE_CARD_BASE_HEIGHT + (page?.exits.length ?? 0) * PAGE_EXIT_HEIGHT;
-          const otherCards = project.pages
+          const otherCards = currentNodes
             .filter((item) => !selected.has(item.id))
             .map((item) => ({
               id: item.id,
               position: item.position,
-              height: PAGE_CARD_BASE_HEIGHT + item.exits.length * PAGE_EXIT_HEIGHT,
+              height:
+                item.measured?.height ??
+                PAGE_CARD_BASE_HEIGHT +
+                  (project.pages.find((candidate) => candidate.id === item.id)?.exits.length ?? 0) *
+                    PAGE_EXIT_HEIGHT,
             }));
           const targetY = snapYToAdjacentCard(
             dragged.position.y,
@@ -329,7 +391,11 @@ export function FlowWorkspace({
             draggedHeight,
             otherCards,
           );
-          setSnapGuide(targetY === dragged.position.y ? null : { x: targetX, y: targetY });
+          // The guide marks the gap between cards, not the dragged card's top
+          // edge; otherwise snapping above a lower card looks like a far-away
+          // "higher dashed line".
+          const guideY = targetY < dragged.position.y ? targetY + draggedHeight + 4 : targetY - 4;
+          setSnapGuide(targetY === dragged.position.y ? null : { x: targetX, y: guideY });
         }}
         onNodeDragStop={(_, dragged) => {
           const current = flowRef.current?.getNodes() ?? nodes;
@@ -340,20 +406,25 @@ export function FlowWorkspace({
           );
           selected.add(dragged.id);
           const targetX = snapXToColumn(draggedNode.position.x);
-          const otherPages = project.pages.filter((page) => !selected.has(page.id));
+          const otherNodes = current.filter((node) => !selected.has(node.id));
           const draggedPage = project.pages.find((page) => page.id === draggedNode.id);
           const draggedHeight =
             draggedNode.measured?.height ??
             PAGE_CARD_BASE_HEIGHT + (draggedPage?.exits.length ?? 0) * PAGE_EXIT_HEIGHT;
+          const otherPages = otherNodes.map((node) => ({
+            id: node.id,
+            position: node.position,
+            height:
+              node.measured?.height ??
+              PAGE_CARD_BASE_HEIGHT +
+                (project.pages.find((page) => page.id === node.id)?.exits.length ?? 0) *
+                  PAGE_EXIT_HEIGHT,
+          }));
           const targetY = snapYToAdjacentCard(
             draggedNode.position.y,
             targetX,
             draggedHeight,
-            otherPages.map((page) => ({
-              id: page.id,
-              position: page.position,
-              height: PAGE_CARD_BASE_HEIGHT + page.exits.length * PAGE_EXIT_HEIGHT,
-            })),
+            otherPages,
           );
           const delta = {
             x: targetX - draggedNode.position.x,
@@ -377,7 +448,7 @@ export function FlowWorkspace({
               id: page.id,
               x: page.position.x,
               y: page.position.y,
-              height: PAGE_CARD_BASE_HEIGHT + page.exits.length * PAGE_EXIT_HEIGHT,
+              height: page.height,
             }));
             delta.y += resolveVerticalCollisions(group, others);
           }
@@ -475,7 +546,7 @@ export function FlowWorkspace({
         <small className="flow-legend-note">{EDGE_CYCLE_NOTE}</small>
       </div>
       <div className="canvas-hint">
-        拖动画布平移 · 滚轮缩放 · 右侧圆点拖到目标页左侧圆点连线 · 双击卡片编辑页面
+        拖动画布平移 · 滚轮缩放 · Shift＋拖动框选卡片 · 右侧圆点拖到目标页左侧圆点连线
       </div>
     </main>
   );

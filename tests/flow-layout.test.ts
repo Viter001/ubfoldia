@@ -5,6 +5,7 @@ import {
   FLOW_COLUMN_ORIGIN_X,
   FLOW_COLUMN_STEP_X,
   FLOW_VERTICAL_SNAP_DISTANCE,
+  arrangeFlowCards,
   columnIndexForX,
   flowColumnRange,
   levelForX,
@@ -162,4 +163,29 @@ test('vertical collision resolution moves a dragged group to the nearest gap', (
   );
   const below = [{ id: 'below', x: FLOW_COLUMN_ORIGIN_X, y: 420, height: 200 }];
   assert.equal(resolveVerticalCollisions(group, below), -38);
+});
+
+test('vertical collision resolution clears multiple nearby cards at once', () => {
+  const group = [{ id: 'drag', x: FLOW_COLUMN_ORIGIN_X, y: 250, height: 200 }];
+  const neighbors = [
+    { id: 'above', x: FLOW_COLUMN_ORIGIN_X, y: 100, height: 200 },
+    { id: 'below', x: FLOW_COLUMN_ORIGIN_X, y: 430, height: 200 },
+  ];
+  const shift = resolveVerticalCollisions(group, neighbors);
+  assert.ok(shift < 0, `the group must move above the surrounding cards: ${shift}`);
+  const top = group[0].y + shift;
+  assert.ok(top + group[0].height + 8 <= 100 || top >= 430 + 200 + 8);
+});
+
+test('one-click arrange removes legacy overlaps while preserving columns', () => {
+  const arranged = arrangeFlowCards([
+    { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 100 }, height: 200 },
+    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X + 5, y: 120 }, height: 240 },
+    { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 500 }, height: 200 },
+  ]);
+  assert.deepEqual(arranged, [
+    { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 80 } },
+    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X, y: 304 } },
+    { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 80 } },
+  ]);
 });

@@ -30,6 +30,7 @@ export type CommandRibbonProps = {
   onShowFlow: () => void;
   onShowPage: () => void;
   onFit: () => void;
+  onArrange: () => void;
   /** Initial visual state; production keeps the local state and starts expanded. */
   defaultCollapsed?: boolean;
   theme?: ThemeId;
@@ -63,6 +64,7 @@ export function CommandRibbon({
   onShowFlow,
   onShowPage,
   onFit,
+  onArrange,
   defaultCollapsed = false,
   theme,
   onTheme,
@@ -384,6 +386,9 @@ export function CommandRibbon({
                 </button>
               </RibbonGroup>
               <RibbonGroup title="画布">
+                <button type="button" disabled={mode !== 'flow'} onClick={onArrange}>
+                  整理排序
+                </button>
                 <button type="button" disabled={mode !== 'flow'} onClick={onFit}>
                   适应画布
                 </button>

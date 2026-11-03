@@ -100,45 +100,96 @@ export function snapYToAdjacentCard(
 }
 
 /**
- * Resolve vertical collisions for a dragged group by moving the whole group
- * above or below the nearest conflicting card. The group's relative positions
- * are never changed. This is intentionally conservative: cards in different
- * level columns can overlap freely unless the caller opts into overlap mode.
+ * Resolve vertical collisions for a dragged group by finding the nearest
+ * common vertical shift that keeps every group card clear of same-column
+ * cards. Unlike a one-collision-at-a-time nudge, this treats the union of all
+ * invalid shift ranges as one constraint set, so a top-row card cannot bounce
+ * between two neighbors and remain overlapping.
  */
 export function resolveVerticalCollisions(
   group: readonly FlowOverlapCard[],
   cards: readonly FlowOverlapCard[],
   gap = 8,
 ): number {
-  let delta = 0;
-  for (let iteration = 0; iteration < 20; iteration++) {
-    const collisions: Array<{ group: FlowOverlapCard; other: FlowOverlapCard }> = [];
-    for (const card of group) {
-      const top = card.y + delta;
-      const bottom = top + card.height;
-      for (const other of cards) {
-        if (columnIndexForX(card.x) !== columnIndexForX(other.x)) continue;
-        if (top < other.y + other.height + gap && bottom + gap > other.y) {
-          collisions.push({ group: card, other });
-        }
-      }
+  if (!group.length) return 0;
+  const invalid: Array<[number, number]> = [];
+  for (const card of group) {
+    const height = card.height > 0 ? card.height : NODE_HEIGHT_FALLBACK;
+    for (const other of cards) {
+      if (columnIndexForX(card.x) !== columnIndexForX(other.x)) continue;
+      const otherHeight = other.height > 0 ? other.height : NODE_HEIGHT_FALLBACK;
+      // The group card overlaps `other` when:
+      //   card.y + delta < other.y + otherHeight + gap
+      //   card.y + height + delta + gap > other.y
+      // which is the open interval (lower, upper) for delta.
+      const lower = other.y - gap - card.y - height;
+      const upper = other.y + otherHeight + gap - card.y;
+      if (lower < upper) invalid.push([lower, upper]);
     }
-    if (!collisions.length) return delta;
-
-    let nearestShift: number | undefined;
-    for (const { group: card, other } of collisions) {
-      const top = card.y + delta;
-      const bottom = top + card.height;
-      for (const shift of [other.y + other.height + gap - top, other.y - gap - bottom]) {
-        if (shift === 0) continue;
-        if (nearestShift === undefined || Math.abs(shift) < Math.abs(nearestShift))
-          nearestShift = shift;
-      }
-    }
-    if (nearestShift === undefined) return delta;
-    delta += nearestShift;
   }
-  return delta;
+  if (!invalid.length) return 0;
+  const overlaps = (delta: number) =>
+    invalid.some(([lower, upper]) => delta > lower && delta < upper);
+  if (!overlaps(0)) return 0;
+
+  // Merge invalid ranges, then return the closest boundary of the merged range
+  // that contains zero. Exact boundaries are valid because the overlap test is
+  // strict; a boundary places the card with the requested gap.
+  invalid.sort((a, b) => a[0] - b[0]);
+  let [lower, upper] = invalid[0];
+  for (let index = 1; index < invalid.length; index++) {
+    const next = invalid[index];
+    if (next[0] > upper) {
+      if (lower < 0 && upper > 0) break;
+      [lower, upper] = next;
+      continue;
+    }
+    upper = Math.max(upper, next[1]);
+  }
+  return Math.abs(lower) <= Math.abs(upper) ? lower : upper;
+}
+
+/** Vertical gutter used by the one-click cleanup action. */
+export const FLOW_ARRANGE_GAP = 24;
+/** Default top edge for the one-click cleanup action. */
+export const FLOW_ARRANGE_START_Y = 80;
+
+export type FlowArrangeCard = FlowSnapCard & {
+  height: number;
+};
+
+/**
+ * Arrange every card on its current level column, preserving each column and
+ * the existing top-to-bottom order. All cards receive an exact column x and
+ * are stacked with a fixed gutter, which removes legacy overlaps in one
+ * reversible page-position command.
+ */
+export function arrangeFlowCards(
+  cards: readonly FlowArrangeCard[],
+  startY = FLOW_ARRANGE_START_Y,
+  gap = FLOW_ARRANGE_GAP,
+): Array<{ id: string; position: { x: number; y: number } }> {
+  const columns = new Map<number, Array<FlowArrangeCard & { order: number }>>();
+  cards.forEach((card, order) => {
+    const column = columnIndexForX(card.position.x);
+    const list = columns.get(column) ?? [];
+    list.push({ ...card, order });
+    columns.set(column, list);
+  });
+  const result: Array<{ id: string; position: { x: number; y: number } }> = [];
+  for (const [column, list] of [...columns.entries()].sort((a, b) => a[0] - b[0])) {
+    list.sort((a, b) => a.position.y - b.position.y || a.order - b.order);
+    let y = startY;
+    for (const card of list) {
+      result.push({
+        id: card.id,
+        position: { x: xForColumnIndex(column), y },
+      });
+      const height = card.height > 0 ? card.height : NODE_HEIGHT_FALLBACK;
+      y += height + gap;
+    }
+  }
+  return result;
 }
 
 /** Human-facing level number (column 0 is level 1). */

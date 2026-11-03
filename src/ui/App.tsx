@@ -296,6 +296,7 @@ export function App() {
               if (page) dispatch({ type: 'mode', mode: 'page' });
             }}
             onFit={flowView.requestFit}
+            onArrange={flowView.requestArrange}
           />
           {mode === 'flow' ? (
             <div className="flow-layout">
@@ -308,9 +309,11 @@ export function App() {
                 view={flowView.view}
                 flowRef={flowRef}
                 fitEpoch={flowView.fitEpoch}
+                arrangeEpoch={flowView.arrangeEpoch}
                 onSelectPage={(id, additive) =>
                   dispatch({ type: 'select-page', pageId: id, additive })
                 }
+                onSelectPages={(pageIds) => dispatch({ type: 'select-pages', pageIds })}
                 onClearSelection={() => dispatch({ type: 'clear-selection' })}
                 onEditPage={edit}
                 onSelectEdge={(id, pageId) => dispatch({ type: 'select-edge', pageId, edgeId: id })}

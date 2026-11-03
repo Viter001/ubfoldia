@@ -70,6 +70,7 @@ export function useFlowView(project: Project | null, sessionEpoch: number, activ
   const store = useRef<FlowViewStore>(createFlowViewStore());
   const previousEpoch = useRef(sessionEpoch);
   const [fitEpoch, setFitEpoch] = useState(0);
+  const [arrangeEpoch, setArrangeEpoch] = useState(0);
   const [resetEpoch, setResetEpoch] = useState(0);
 
   useEffect(() => {
@@ -100,6 +101,15 @@ export function useFlowView(project: Project | null, sessionEpoch: number, activ
     rememberViewport(store.current, viewport);
   }, []);
   const requestFit = useCallback(() => setFitEpoch((epoch) => epoch + 1), []);
+  const requestArrange = useCallback(() => setArrangeEpoch((epoch) => epoch + 1), []);
 
-  return { view: store.current, fitEpoch, resetEpoch, move, requestFit };
+  return {
+    view: store.current,
+    fitEpoch,
+    arrangeEpoch,
+    resetEpoch,
+    move,
+    requestFit,
+    requestArrange,
+  };
 }
