@@ -51,7 +51,15 @@ function PageCard({ data, selected }: NodeProps<Node<CardData>>) {
   const { page, project, warnings, missing, level, onEdit } = data;
   return (
     <div className={`page-card ${selected ? 'active' : ''}`}>
-      <Handle type="target" position={Position.Left} id="in" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="in"
+        className="flow-target-handle"
+        data-page-id={page.id}
+        aria-label={`连接到「${page.name}」`}
+        title="把连线拖到这里以连接本页"
+      />
       <div className="card-heading">
         <span className="card-number">
           {String(project.pages.findIndex((x) => x.id === page.id) + 1).padStart(2, '0')}
@@ -76,7 +84,17 @@ function PageCard({ data, selected }: NodeProps<Node<CardData>>) {
           <span>
             {String(i + 1).padStart(2, '0')} · {e.label || '继续'}
           </span>
-          <Handle type="source" id={e.id} position={Position.Right} style={{ top: '50%' }} />
+          <Handle
+            type="source"
+            id={e.id}
+            position={Position.Right}
+            className="flow-source-handle"
+            data-page-id={page.id}
+            data-exit-id={e.id}
+            aria-label={`从「${e.label || '继续'}」出口拖出连线`}
+            title="从这里拖出连线到目标页"
+            style={{ top: '50%' }}
+          />
         </div>
       ))}
     </div>
@@ -456,7 +474,9 @@ export function FlowWorkspace({
         ))}
         <small className="flow-legend-note">{EDGE_CYCLE_NOTE}</small>
       </div>
-      <div className="canvas-hint">拖动画布平移 · 滚轮缩放 · 双击卡片编辑页面</div>
+      <div className="canvas-hint">
+        拖动画布平移 · 滚轮缩放 · 右侧圆点拖到目标页左侧圆点连线 · 双击卡片编辑页面
+      </div>
     </main>
   );
 }

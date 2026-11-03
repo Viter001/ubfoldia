@@ -167,6 +167,78 @@ try {
     'level columns no longer use gradient backgrounds',
   );
 
+  // 1c. Connection dots are doubled and the enlarged practical hit area can
+  //     complete a real drag from an existing exit to another page.
+  const sourcePage = opened.project.pages.find((item) => item.exits.length > 0);
+  const sourceExit = sourcePage?.exits[0];
+  const targetPage = opened.project.pages.find(
+    (item) => item.id !== sourcePage?.id && item.id !== sourceExit?.target,
+  );
+  assert.ok(sourcePage && sourceExit && targetPage, 'connection test pages exist');
+  const sourceHandle = page.locator(`.flow-source-handle[data-exit-id="${sourceExit.id}"]`);
+  const targetHandle = page.locator(`.flow-target-handle[data-page-id="${targetPage.id}"]`);
+  assert.equal(
+    await page.locator('.flow-target-handle').count(),
+    opened.project.pages.length,
+    'every card has one target dot',
+  );
+  assert.equal(
+    await page.locator('.flow-source-handle').count(),
+    opened.project.pages.reduce((count, item) => count + item.exits.length, 0),
+    'every exit has one source dot',
+  );
+  const sourceDot = await sourceHandle.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    return {
+      width: Number.parseFloat(style.width),
+      height: Number.parseFloat(style.height),
+      renderedWidth: box.width,
+      renderedHeight: box.height,
+      label: element.getAttribute('aria-label'),
+    };
+  });
+  assert.ok(
+    sourceDot.width >= 20 && sourceDot.height >= 20,
+    `source dot is 20px or larger: ${JSON.stringify(sourceDot)}`,
+  );
+  assert.match(sourceDot.label ?? '', /出口拖出连线/);
+  await page.getByRole('tab', { name: '视图', exact: true }).click();
+  await page.getByRole('button', { name: '适应画布', exact: true }).click();
+  await page.waitForTimeout(300);
+  const sourceBox = await sourceHandle.boundingBox();
+  const targetBox = await targetHandle.boundingBox();
+  assert.ok(sourceBox && targetBox, 'connection dots are visible for drag');
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, {
+    steps: 20,
+  });
+  await page.mouse.up();
+  const connected = await waitForState(
+    (current) =>
+      current.project.pages
+        .find((item) => item.id === sourcePage.id)
+        ?.exits.some((exit) => exit.id === sourceExit.id && exit.target === targetPage.id),
+    'drag connection to target handle',
+  );
+  assert.equal(
+    connected.project.pages
+      .find((item) => item.id === sourcePage.id)
+      .exits.find((exit) => exit.id === sourceExit.id).target,
+    targetPage.id,
+  );
+  await screenshot('flow-connection-hotspots.png');
+  const reconnectUndo = await invoke('undo');
+  assert.equal(
+    reconnectUndo.project.pages
+      .find((item) => item.id === sourcePage.id)
+      .exits.find((exit) => exit.id === sourceExit.id).target,
+    sourceExit.target,
+    'undo restores the previous connection target',
+  );
+  await page.getByRole('tab', { name: '开始', exact: true }).click();
+
   const batchA = fork;
   const batchB = opened.project.pages.find((item) => item.name === '走向山谷');
   assert.ok(batchB, 'second page for multi-selection');
@@ -423,6 +495,12 @@ try {
           viewportStroke,
         },
         flatColumns: true,
+        connectionDots: {
+          size: sourceDot,
+          dragConnected: true,
+          undoRestored: true,
+          targetPage: targetPage.name,
+        },
         overlapControl: { defaultAllowed: false, toggleWorks: true },
         batch: {
           selected: 2,
@@ -451,7 +529,7 @@ try {
     ),
   );
   console.log(
-    'PASS flow columns, minimap, flat columns, batch edit/drag/undo, four edge classes, save/reopen, ribbon collapse',
+    'PASS flow columns, 20px connection dots and drag, minimap, flat columns, batch edit/drag/undo, four edge classes, save/reopen, ribbon collapse',
     run,
   );
 } finally {
