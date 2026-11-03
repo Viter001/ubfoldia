@@ -4,6 +4,7 @@ import {
   FLOW_COLUMN_MAX,
   FLOW_COLUMN_ORIGIN_X,
   FLOW_COLUMN_STEP_X,
+  FLOW_CARD_GAP,
   FLOW_VERTICAL_SNAP_DISTANCE,
   arrangeFlowCards,
   columnIndexForX,
@@ -126,11 +127,11 @@ test('vertical snapping targets the gap above or below a same-column card', () =
     { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X + 20, y: 160 }, height: 200 },
     { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 500 }, height: 200 },
   ];
-  assert.equal(snapYToAdjacentCard(300, FLOW_COLUMN_ORIGIN_X, 200, cards), 308);
+  assert.equal(snapYToAdjacentCard(300, FLOW_COLUMN_ORIGIN_X, 200, cards), 300 + FLOW_CARD_GAP);
   assert.equal(snapYToAdjacentCard(260, FLOW_COLUMN_ORIGIN_X, 200, cards), 260);
   assert.equal(
     snapYToAdjacentCard(360, FLOW_COLUMN_ORIGIN_X, 200, cards),
-    368,
+    360 + FLOW_CARD_GAP,
     'nearest same-column gap is used',
   );
   assert.equal(
@@ -156,13 +157,13 @@ test('vertical collision resolution moves a dragged group to the nearest gap', (
     { id: 'above', x: FLOW_COLUMN_ORIGIN_X, y: 100, height: 200 },
     { id: 'other-column', x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 250, height: 200 },
   ];
-  assert.equal(resolveVerticalCollisions(group, others), 58);
+  assert.equal(resolveVerticalCollisions(group, others), 50 + FLOW_CARD_GAP);
   assert.equal(
     resolveVerticalCollisions([{ id: 'drag', x: FLOW_COLUMN_ORIGIN_X, y: 250, height: 200 }], []),
     0,
   );
   const below = [{ id: 'below', x: FLOW_COLUMN_ORIGIN_X, y: 420, height: 200 }];
-  assert.equal(resolveVerticalCollisions(group, below), -38);
+  assert.equal(resolveVerticalCollisions(group, below), -30 - FLOW_CARD_GAP);
 });
 
 test('vertical collision resolution clears multiple nearby cards at once', () => {
@@ -174,7 +175,7 @@ test('vertical collision resolution clears multiple nearby cards at once', () =>
   const shift = resolveVerticalCollisions(group, neighbors);
   assert.ok(shift < 0, `the group must move above the surrounding cards: ${shift}`);
   const top = group[0].y + shift;
-  assert.ok(top + group[0].height + 8 <= 100 || top >= 430 + 200 + 8);
+  assert.ok(top + group[0].height + FLOW_CARD_GAP <= 100 || top >= 430 + 200 + FLOW_CARD_GAP);
 });
 
 test('one-click arrange removes legacy overlaps while preserving columns', () => {
@@ -185,7 +186,7 @@ test('one-click arrange removes legacy overlaps while preserving columns', () =>
   ]);
   assert.deepEqual(arranged, [
     { id: 'a', position: { x: FLOW_COLUMN_ORIGIN_X, y: 80 } },
-    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X, y: 304 } },
+    { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X, y: 80 + 200 + FLOW_CARD_GAP } },
     { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 80 } },
   ]);
 });

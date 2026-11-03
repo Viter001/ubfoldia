@@ -52,6 +52,8 @@ export function snapXToColumn(x: number): number {
 
 /** Narrow vertical hit range used when aligning a dragged card to a sibling. */
 export const FLOW_VERTICAL_SNAP_DISTANCE = 40;
+/** Shared vertical gutter for snapping, collision escape and one-click cleanup. */
+export const FLOW_CARD_GAP = 16;
 
 export type FlowSnapCard = {
   id: string;
@@ -78,7 +80,7 @@ export function snapYToAdjacentCard(
   cards: readonly FlowSnapCard[],
   excludedIds: ReadonlySet<string> = new Set(),
   threshold = FLOW_VERTICAL_SNAP_DISTANCE,
-  gap = 8,
+  gap = FLOW_CARD_GAP,
 ): number {
   if (!Number.isFinite(y) || !Number.isFinite(x) || !Number.isFinite(height)) return y;
   const column = columnIndexForX(x);
@@ -109,7 +111,7 @@ export function snapYToAdjacentCard(
 export function resolveVerticalCollisions(
   group: readonly FlowOverlapCard[],
   cards: readonly FlowOverlapCard[],
-  gap = 8,
+  gap = FLOW_CARD_GAP,
 ): number {
   if (!group.length) return 0;
   const invalid: Array<[number, number]> = [];
@@ -150,7 +152,7 @@ export function resolveVerticalCollisions(
 }
 
 /** Vertical gutter used by the one-click cleanup action. */
-export const FLOW_ARRANGE_GAP = 24;
+export const FLOW_ARRANGE_GAP = FLOW_CARD_GAP;
 /** Default top edge for the one-click cleanup action. */
 export const FLOW_ARRANGE_START_Y = 80;
 
