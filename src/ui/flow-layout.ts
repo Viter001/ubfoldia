@@ -33,6 +33,58 @@ function finite(value: number, fallback: number): number {
   return Number.isFinite(value) ? value : fallback;
 }
 
+export type FlowWorldBounds = {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+};
+
+export type FlowViewport = {
+  x: number;
+  y: number;
+  zoom: number;
+};
+
+/** Minimum horizontal overlap with the graph, as a share of the viewport width. */
+export const FLOW_VIEWPORT_HORIZONTAL_RATIO = 0.5;
+/** Minimum vertical flow overlap kept inside the minimap viewport, in flow units. */
+export const FLOW_VIEWPORT_VERTICAL_MIN_OVERLAP = 160;
+
+/**
+ * Keep the viewport near the story instead of allowing infinite empty panning.
+ * Horizontally at least half of the visible width must intersect the graph.
+ * Vertically a small strip of the main flow must remain, matching the minimap
+ * rule; this intentionally gives vertical panning more room than horizontal.
+ */
+export function clampFlowViewport(
+  viewport: FlowViewport,
+  width: number,
+  height: number,
+  bounds: FlowWorldBounds,
+): FlowViewport {
+  const zoom = finite(viewport.zoom, 1) > 0 ? finite(viewport.zoom, 1) : 1;
+  const worldWidth = Math.max(1, finite(width, 0)) / zoom;
+  const worldHeight = Math.max(1, finite(height, 0)) / zoom;
+  const graphWidth = Math.max(0, bounds.maxX - bounds.minX);
+  const graphHeight = Math.max(0, bounds.maxY - bounds.minY);
+  if (!graphWidth || !graphHeight) return viewport;
+
+  const minXOverlap = Math.min(graphWidth, worldWidth * FLOW_VIEWPORT_HORIZONTAL_RATIO);
+  const minYOverlap = Math.min(graphHeight, worldHeight, FLOW_VIEWPORT_VERTICAL_MIN_OVERLAP);
+  const leftMin = bounds.minX + minXOverlap - worldWidth;
+  const leftMax = bounds.maxX - minXOverlap;
+  const topMin = bounds.minY + minYOverlap - worldHeight;
+  const topMax = bounds.maxY - minYOverlap;
+  const worldLeft = Math.min(Math.max(-viewport.x / zoom, leftMin), leftMax);
+  const worldTop = Math.min(Math.max(-viewport.y / zoom, topMin), topMax);
+  return {
+    x: -worldLeft * zoom,
+    y: -worldTop * zoom,
+    zoom: viewport.zoom,
+  };
+}
+
 /** Nearest column for any x; negative positions clamp to the first column. */
 export function columnIndexForX(x: number): number {
   if (!Number.isFinite(x)) return 0;

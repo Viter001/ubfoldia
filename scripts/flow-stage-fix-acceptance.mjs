@@ -107,7 +107,7 @@ try {
       return { fill: style.fill, fillOpacity: style.fillOpacity, stroke: style.stroke };
     });
   assert.equal(miniMask.fillOpacity, '0.68');
-  assert.notEqual(miniMask.stroke, 'none');
+  assert.equal(miniMask.stroke, 'none');
   assert.ok((await page.locator('.react-flow__minimap-node').count()) >= 5);
   const miniClip = await page.locator('.flow-minimap').evaluate((element) => {
     const svg = element.querySelector('.react-flow__minimap-svg');
@@ -118,19 +118,52 @@ try {
   });
   assert.equal(miniClip.containerOverflow, 'hidden');
   assert.equal(miniClip.svgOverflow, 'hidden');
+  const miniFrame = page.locator('.flow-minimap-viewport-frame');
+  await miniFrame.waitFor();
+  const frameCheck = await miniFrame.evaluate((element) => {
+    const host = element.parentElement;
+    const frame = element.getBoundingClientRect();
+    const box = host.getBoundingClientRect();
+    return {
+      borderWidth: getComputedStyle(element).borderTopWidth,
+      inside:
+        frame.left >= box.left - 1 &&
+        frame.top >= box.top - 1 &&
+        frame.right <= box.right + 1 &&
+        frame.bottom <= box.bottom + 1,
+    };
+  });
+  assert.ok(Number.parseFloat(frameCheck.borderWidth) > 0, 'viewport frame has one visible border');
+  assert.equal(frameCheck.inside, true, 'viewport frame stays inside the minimap');
   await screenshot('minimap-readable.png');
 
   // 1b. Panning far must not move every card outside the viewport.
   const panCanvas = await page.locator('.flow-canvas').boundingBox();
   assert.ok(panCanvas, 'flow canvas is visible for pan limit check');
-  for (let i = 0; i < 3; i++) {
-    await page.mouse.move(panCanvas.x + 20, panCanvas.y + panCanvas.height - 20);
-    await page.mouse.down();
-    await page.mouse.move(panCanvas.x + panCanvas.width - 30, panCanvas.y + panCanvas.height - 30, {
-      steps: 12,
+  const findBlankPanePoint = () =>
+    page.evaluate(() => {
+      const canvas = document.querySelector('.flow-canvas')?.getBoundingClientRect();
+      if (!canvas) return null;
+      for (let y = canvas.top + 80; y < canvas.bottom - 80; y += 30) {
+        for (let x = canvas.left + 80; x < canvas.right - 80; x += 30) {
+          const element = document.elementFromPoint(x, y);
+          if (element?.classList.contains('react-flow__pane')) return { x, y };
+        }
+      }
+      return null;
     });
+  for (let i = 0; i < 3; i++) {
+    const start = await findBlankPanePoint();
+    assert.ok(start, 'found a blank pane point for pan test');
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(
+      Math.min(panCanvas.x + panCanvas.width - 20, start.x + panCanvas.width * 0.7),
+      Math.min(panCanvas.y + panCanvas.height - 20, start.y + panCanvas.height * 0.45),
+      { steps: 18 },
+    );
     await page.mouse.up();
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(180);
   }
   const visibleAfterPan = (await nodeBoxes()).filter(
     (box) =>
@@ -140,6 +173,41 @@ try {
       box.top < panCanvas.y + panCanvas.height,
   );
   assert.ok(visibleAfterPan.length > 0, 'viewport boundary keeps at least one card visible');
+  const panState = await state();
+  const flowTransform = await page.locator('.react-flow__viewport').evaluate((element) => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    return { x: matrix.e, y: matrix.f, zoom: matrix.a };
+  });
+  const snap = (x) => 80 + Math.round((x - 80) / 360) * 360;
+  const graph = panState.project.pages.reduce(
+    (bounds, page) => {
+      const x = snap(page.position.x);
+      const height = 240 + page.exits.length * 34;
+      return {
+        minX: Math.min(bounds.minX, x),
+        minY: Math.min(bounds.minY, page.position.y),
+        maxX: Math.max(bounds.maxX, x + 244),
+        maxY: Math.max(bounds.maxY, page.position.y + height),
+      };
+    },
+    { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+  );
+  const worldWidth = panCanvas.width / flowTransform.zoom;
+  const worldHeight = panCanvas.height / flowTransform.zoom;
+  const viewLeft = -flowTransform.x / flowTransform.zoom;
+  const viewTop = -flowTransform.y / flowTransform.zoom;
+  const horizontalOverlap =
+    Math.min(viewLeft + worldWidth, graph.maxX) - Math.max(viewLeft, graph.minX);
+  const verticalOverlap =
+    Math.min(viewTop + worldHeight, graph.maxY) - Math.max(viewTop, graph.minY);
+  assert.ok(
+    horizontalOverlap >= worldWidth * 0.5 - 1,
+    `horizontal flow overlap too small: ${horizontalOverlap} / ${worldWidth}`,
+  );
+  assert.ok(
+    verticalOverlap >= Math.min(160, worldHeight, graph.maxY - graph.minY) - 1,
+    `vertical flow overlap too small: ${verticalOverlap}`,
+  );
   await screenshot('viewport-bounded.png');
   await fit();
 
@@ -251,8 +319,12 @@ try {
     JSON.stringify(
       {
         passed: true,
-        minimap: { ...miniMask, ...miniClip },
-        viewportBound: { visibleCardsAfterPan: visibleAfterPan.length },
+        minimap: { ...miniMask, ...miniClip, frame: frameCheck },
+        viewportBound: {
+          visibleCardsAfterPan: visibleAfterPan.length,
+          horizontalOverlap,
+          verticalOverlap,
+        },
         arrange: { pages: arranged.project.pages.length, columns: columns(arranged.project) },
         marquee: {
           selected: marqueeSelected,

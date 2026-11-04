@@ -1826,9 +1826,7 @@ button:disabled {
   border: 1px solid var(--minimap-border);
   border-radius: 2px;
   background: var(--minimap-bg);
-  box-shadow:
-    0 8px 24px #000c,
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: 0 8px 24px #000c;
 }
 .flow-minimap .react-flow__minimap-mask {
   fill: var(--minimap-mask);
@@ -2365,14 +2363,19 @@ button:disabled {
 }
 
 .flow-minimap .react-flow__minimap-mask {
-  /* Keep the current viewport frame prominent without hiding nodes outside
-     it; users need the minimap to read the whole story graph. */
+  /* Dim the outside of the viewport without hiding the story graph. The mask
+     path must not be stroked: it also contains the minimap outer rectangle. */
   fill-opacity: 0.68;
-  stroke: var(--accent);
-  stroke-width: 2.5;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 3px var(--accent-soft));
+  stroke: none;
 }
 .flow-minimap .react-flow__minimap-node {
   opacity: 1;
+}
+.flow-minimap-viewport-frame {
+  position: absolute;
+  z-index: 2;
+  border: 1.5px solid var(--accent);
+  border-radius: 1px;
+  box-shadow: 0 0 0 1px #0007;
+  pointer-events: none;
 }

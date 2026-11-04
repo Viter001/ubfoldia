@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ReactFlow,
   Background,
@@ -14,6 +15,7 @@ import {
   type NodeProps,
   type Node,
   type ReactFlowInstance,
+  type Viewport,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { issues, type Page, type Project } from '../core/project';
@@ -30,6 +32,7 @@ import {
   FLOW_ARRANGE_START_Y,
   FLOW_COLUMN_STEP_X,
   arrangeFlowCards,
+  clampFlowViewport,
   columnIndexForX,
   flowColumnRange,
   levelForX,
@@ -51,7 +54,6 @@ type CardData = {
 const PAGE_CARD_BASE_HEIGHT = 240;
 const PAGE_EXIT_HEIGHT = 34;
 const PAGE_CARD_WIDTH = 244;
-const FLOW_VIEWPORT_PADDING = 480;
 
 function PageCard({ data, selected }: NodeProps<Node<CardData>>) {
   const { page, project, warnings, missing, level, onEdit } = data;
@@ -172,6 +174,52 @@ function FlowColumns({ project }: { project: Project }) {
   );
 }
 
+/**
+ * MiniMap draws its mask as one SVG path containing both the minimap outer
+ * rectangle and the viewport rectangle. Styling that path strokes both rings,
+ * so this portal adds a single, dedicated viewport frame instead.
+ */
+function MiniMapViewportFrame() {
+  const viewport = useViewport();
+  const canvasWidth = useStore((state) => state.width);
+  const canvasHeight = useStore((state) => state.height);
+  const nodeCount = useStore((state) => state.nodes.length);
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setHost(document.querySelector<HTMLElement>('.flow-minimap'));
+  }, []);
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    if (!host || !frame) return;
+    const svg = host.querySelector<SVGSVGElement>('.react-flow__minimap-svg');
+    const viewBox = svg?.getAttribute('viewBox')?.split(/\s+/).map(Number);
+    if (
+      !svg ||
+      !viewBox ||
+      viewBox.length !== 4 ||
+      viewBox.some((value) => !Number.isFinite(value))
+    )
+      return;
+    const [x, y, width, height] = viewBox;
+    const svgBox = svg.getBoundingClientRect();
+    const hostBox = host.getBoundingClientRect();
+    const worldWidth = canvasWidth / viewport.zoom;
+    const worldHeight = canvasHeight / viewport.zoom;
+    const viewX = -viewport.x / viewport.zoom;
+    const viewY = -viewport.y / viewport.zoom;
+    frame.style.left = `${((viewX - x) / width) * svgBox.width + svgBox.left - hostBox.left}px`;
+    frame.style.top = `${((viewY - y) / height) * svgBox.height + svgBox.top - hostBox.top}px`;
+    frame.style.width = `${(worldWidth / width) * svgBox.width}px`;
+    frame.style.height = `${(worldHeight / height) * svgBox.height}px`;
+  }, [host, viewport, canvasWidth, canvasHeight, nodeCount]);
+
+  if (!host) return null;
+  return createPortal(<div ref={frameRef} className="flow-minimap-viewport-frame" />, host);
+}
+
 export function FlowWorkspace({
   project,
   selectedPageId,
@@ -237,8 +285,8 @@ export function FlowWorkspace({
     );
   }, [project, selectedPageIds, missing, onEditPage]);
 
-  const translateExtent = useMemo<[[number, number], [number, number]] | undefined>(() => {
-    if (!project.pages.length) return undefined;
+  const viewportBounds = useMemo(() => {
+    if (!project.pages.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
     let minX = Number.POSITIVE_INFINITY;
     let minY = Number.POSITIVE_INFINITY;
     let maxX = Number.NEGATIVE_INFINITY;
@@ -251,11 +299,17 @@ export function FlowWorkspace({
       maxX = Math.max(maxX, x + PAGE_CARD_WIDTH);
       maxY = Math.max(maxY, page.position.y + height);
     }
-    return [
-      [minX - FLOW_VIEWPORT_PADDING, minY - FLOW_VIEWPORT_PADDING],
-      [maxX + FLOW_VIEWPORT_PADDING, maxY + FLOW_VIEWPORT_PADDING],
-    ];
+    return { minX, minY, maxX, maxY };
   }, [project.pages]);
+  const canvasRef = useRef<HTMLElement | null>(null);
+  const clampViewport = useCallback(
+    (next: Viewport) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return next;
+      return clampFlowViewport(next, canvas.clientWidth, canvas.clientHeight, viewportBounds);
+    },
+    [viewportBounds],
+  );
 
   const edges = useMemo(() => {
     const classify = createEdgeClassifier(project);
@@ -352,7 +406,7 @@ export function FlowWorkspace({
   );
 
   return (
-    <main className="flow-canvas">
+    <main className="flow-canvas" ref={canvasRef}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -362,13 +416,17 @@ export function FlowWorkspace({
           flowRef.current = inst;
           // Remounts after the page workspace or preview must reuse the last
           // recorded framing instead of starting from a fresh fit.
-          inst.setViewport({ ...view.viewport });
+          inst.setViewport(clampViewport({ ...view.viewport }));
         }}
-        onMove={(_, v) => {
-          rememberViewport(view, v);
+        onMove={(_, next) => {
+          const clamped = clampViewport(next);
+          rememberViewport(view, clamped);
+          if (clamped.x !== next.x || clamped.y !== next.y) flowRef.current?.setViewport(clamped);
         }}
-        onMoveEnd={(_, v) => {
-          rememberViewport(view, v);
+        onMoveEnd={(_, next) => {
+          const clamped = clampViewport(next);
+          rememberViewport(view, clamped);
+          if (clamped.x !== next.x || clamped.y !== next.y) flowRef.current?.setViewport(clamped);
         }}
         onNodesChange={(changes) => setNodes((n) => applyNodeChanges(changes, n))}
         onNodeClick={(event, n) =>
@@ -509,7 +567,6 @@ export function FlowWorkspace({
         deleteKeyCode={null}
         minZoom={0.2}
         maxZoom={1.5}
-        translateExtent={translateExtent}
       >
         <FlowColumns project={project} />
         {snapGuide && (
@@ -538,9 +595,10 @@ export function FlowWorkspace({
           nodeStrokeColor="var(--minimap-node-stroke)"
           nodeBorderRadius={2}
           maskColor="var(--minimap-mask)"
-          maskStrokeColor="var(--accent)"
-          maskStrokeWidth={2}
+          maskStrokeColor="transparent"
+          maskStrokeWidth={0}
         />
+        <MiniMapViewportFrame />
       </ReactFlow>
       <label className="flow-overlap-toggle">
         <input

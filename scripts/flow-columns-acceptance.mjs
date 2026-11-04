@@ -157,7 +157,13 @@ try {
   const viewportStroke = await page
     .locator('.react-flow__minimap-mask')
     .evaluate((element) => getComputedStyle(element).stroke);
-  assert.notEqual(viewportStroke, 'none', 'minimap viewport has a visible border');
+  assert.equal(viewportStroke, 'none', 'mask does not stroke its outer rectangle');
+  const viewportFrame = page.locator('.flow-minimap-viewport-frame');
+  await viewportFrame.waitFor();
+  const viewportFrameBorder = await viewportFrame.evaluate(
+    (element) => getComputedStyle(element).borderTopWidth,
+  );
+  assert.ok(parseFloat(viewportFrameBorder) > 0, 'minimap has a single viewport frame');
   assert.equal(
     await page
       .locator('.flow-column')
@@ -493,6 +499,7 @@ try {
           present: true,
           nodes: await page.locator('.react-flow__minimap-node').count(),
           viewportStroke,
+          viewportFrameBorder,
         },
         flatColumns: true,
         connectionDots: {

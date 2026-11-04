@@ -5,7 +5,10 @@ import {
   FLOW_COLUMN_ORIGIN_X,
   FLOW_COLUMN_STEP_X,
   FLOW_CARD_GAP,
+  FLOW_VIEWPORT_HORIZONTAL_RATIO,
+  FLOW_VIEWPORT_VERTICAL_MIN_OVERLAP,
   FLOW_VERTICAL_SNAP_DISTANCE,
+  clampFlowViewport,
   arrangeFlowCards,
   columnIndexForX,
   flowColumnRange,
@@ -189,4 +192,21 @@ test('one-click arrange removes legacy overlaps while preserving columns', () =>
     { id: 'b', position: { x: FLOW_COLUMN_ORIGIN_X, y: 80 + 200 + FLOW_CARD_GAP } },
     { id: 'c', position: { x: FLOW_COLUMN_ORIGIN_X + FLOW_COLUMN_STEP_X, y: 80 } },
   ]);
+});
+
+test('viewport clamping keeps half the width and a vertical flow strip visible', () => {
+  const bounds = { minX: 0, minY: 0, maxX: 1000, maxY: 500 };
+  const farRight = clampFlowViewport({ x: -10000, y: -10000, zoom: 1 }, 1000, 600, bounds);
+  assert.equal(farRight.x, -(bounds.maxX - 1000 * FLOW_VIEWPORT_HORIZONTAL_RATIO));
+  assert.equal(farRight.y, -(bounds.maxY - FLOW_VIEWPORT_VERTICAL_MIN_OVERLAP));
+
+  const farLeft = clampFlowViewport({ x: 10000, y: 10000, zoom: 1 }, 1000, 600, bounds);
+  assert.equal(farLeft.x, -(bounds.minX + 500 - 1000));
+  assert.equal(farLeft.y, -(bounds.minY + FLOW_VIEWPORT_VERTICAL_MIN_OVERLAP - 600));
+
+  assert.deepEqual(clampFlowViewport({ x: -200, y: -100, zoom: 1 }, 1000, 600, bounds), {
+    x: -200,
+    y: -100,
+    zoom: 1,
+  });
 });
