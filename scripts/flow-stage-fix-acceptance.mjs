@@ -106,10 +106,42 @@ try {
       const style = getComputedStyle(element);
       return { fill: style.fill, fillOpacity: style.fillOpacity, stroke: style.stroke };
     });
-  assert.equal(miniMask.fillOpacity, '0.38');
+  assert.equal(miniMask.fillOpacity, '0.68');
   assert.notEqual(miniMask.stroke, 'none');
   assert.ok((await page.locator('.react-flow__minimap-node').count()) >= 5);
+  const miniClip = await page.locator('.flow-minimap').evaluate((element) => {
+    const svg = element.querySelector('.react-flow__minimap-svg');
+    return {
+      containerOverflow: getComputedStyle(element).overflow,
+      svgOverflow: svg ? getComputedStyle(svg).overflow : '',
+    };
+  });
+  assert.equal(miniClip.containerOverflow, 'hidden');
+  assert.equal(miniClip.svgOverflow, 'hidden');
   await screenshot('minimap-readable.png');
+
+  // 1b. Panning far must not move every card outside the viewport.
+  const panCanvas = await page.locator('.flow-canvas').boundingBox();
+  assert.ok(panCanvas, 'flow canvas is visible for pan limit check');
+  for (let i = 0; i < 3; i++) {
+    await page.mouse.move(panCanvas.x + 20, panCanvas.y + panCanvas.height - 20);
+    await page.mouse.down();
+    await page.mouse.move(panCanvas.x + panCanvas.width - 30, panCanvas.y + panCanvas.height - 30, {
+      steps: 12,
+    });
+    await page.mouse.up();
+    await page.waitForTimeout(120);
+  }
+  const visibleAfterPan = (await nodeBoxes()).filter(
+    (box) =>
+      box.right > panCanvas.x &&
+      box.left < panCanvas.x + panCanvas.width &&
+      box.bottom > panCanvas.y &&
+      box.top < panCanvas.y + panCanvas.height,
+  );
+  assert.ok(visibleAfterPan.length > 0, 'viewport boundary keeps at least one card visible');
+  await screenshot('viewport-bounded.png');
+  await fit();
 
   // 2. One-click arrange: one command, columns preserved, no overlaps, undo restores.
   const beforeArrange = await state();
@@ -219,7 +251,8 @@ try {
     JSON.stringify(
       {
         passed: true,
-        minimap: miniMask,
+        minimap: { ...miniMask, ...miniClip },
+        viewportBound: { visibleCardsAfterPan: visibleAfterPan.length },
         arrange: { pages: arranged.project.pages.length, columns: columns(arranged.project) },
         marquee: {
           selected: marqueeSelected,
@@ -232,7 +265,7 @@ try {
     ),
   );
   console.log(
-    'PASS stage fixes: minimap visibility, one-click arrange, marquee selection, snapping',
+    'PASS stage fixes: minimap contrast/clipping, bounded viewport, one-click arrange, marquee selection, snapping',
     run,
   );
 } finally {

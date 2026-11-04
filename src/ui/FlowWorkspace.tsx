@@ -50,6 +50,8 @@ type CardData = {
 
 const PAGE_CARD_BASE_HEIGHT = 240;
 const PAGE_EXIT_HEIGHT = 34;
+const PAGE_CARD_WIDTH = 244;
+const FLOW_VIEWPORT_PADDING = 480;
 
 function PageCard({ data, selected }: NodeProps<Node<CardData>>) {
   const { page, project, warnings, missing, level, onEdit } = data;
@@ -234,6 +236,26 @@ export function FlowWorkspace({
       })),
     );
   }, [project, selectedPageIds, missing, onEditPage]);
+
+  const translateExtent = useMemo<[[number, number], [number, number]] | undefined>(() => {
+    if (!project.pages.length) return undefined;
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    for (const page of project.pages) {
+      const x = snapXToColumn(page.position.x);
+      const height = PAGE_CARD_BASE_HEIGHT + page.exits.length * PAGE_EXIT_HEIGHT;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, page.position.y);
+      maxX = Math.max(maxX, x + PAGE_CARD_WIDTH);
+      maxY = Math.max(maxY, page.position.y + height);
+    }
+    return [
+      [minX - FLOW_VIEWPORT_PADDING, minY - FLOW_VIEWPORT_PADDING],
+      [maxX + FLOW_VIEWPORT_PADDING, maxY + FLOW_VIEWPORT_PADDING],
+    ];
+  }, [project.pages]);
 
   const edges = useMemo(() => {
     const classify = createEdgeClassifier(project);
@@ -487,6 +509,7 @@ export function FlowWorkspace({
         deleteKeyCode={null}
         minZoom={0.2}
         maxZoom={1.5}
+        translateExtent={translateExtent}
       >
         <FlowColumns project={project} />
         {snapGuide && (
